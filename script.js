@@ -20,37 +20,34 @@ const gameBoard = (() => {
 	const board = [];
 
 	// Console board, 2d array
-
-	for (let i = 0; i < rows; i++) {
-		board[i] = [];
-		for (let j = 0; j < columns; j++) {
-			board[i].push('-');
-		}
+	for (let i = 0; i < rows * columns; i++) {
+		board[i] = ' ';
 	}
 
-    const getBoard = () => board;
+	const getBoard = () => board;
 
 	// Mark Cell
-	const markCell = (row, column, player) => {
-		if (row > rows - 1 || column > columns - 1) {
+	const markCell = (cell, player) => {
+		if (cell > columns * rows) {
 			throw new Error('Stay in on the board!');
-		} else if (board[row][column] !== '-'){
-            throw new Error('Field already taken!')
+		} else if (board[cell] !== ' ') {
+			throw new Error('Field already taken!');
 		} else {
-			board[row][column] = player.marker;
-        }
-        
+			board[cell] = player.marker;
+		}
 	};
-
-    
 
 	const printBoard = () => {
-		console.log(board[0]);
-		console.log(board[1]);
-		console.log(board[2]);
+		console.log(board[0] + ' | ' + board[1] + ' | ' + board[2]);
+		console.log('---------');
+		console.log(board[3] + ' | ' + board[4] + ' | ' + board[5]);
+		console.log('---------');
+		console.log(board[6] + ' | ' + board[7] + ' | ' + board[8]);
+		console.log(' ');
+		console.log(' ');
 	};
 
-	return { markCell, printBoard, getBoard };
+	return { markCell, printBoard, getBoard, board };
 })();
 
 //* Game flow
@@ -67,53 +64,88 @@ const gameFlow = (() => {
 		activePlayer = activePlayer === players[0] ? players[1] : players[0];
 	};
 
-    const getActivePlayer = () => activePlayer;
+	const getActivePlayer = () => activePlayer;
 
 	const printNewRound = () => {
 		console.log(`${activePlayer.name}'s turn`);
 		activeBoard.printBoard();
 	};
 
-    const endGame = () => {
-        let win1 = [0, 1, 2];
-        let win2 = [3, 4, 5];
-        let win3 = [6, 7, 8];
+	const endGame = () => {
+		if (
+			activeBoard.board[0] &&
+			activeBoard.board[0] === activeBoard.board[1] &&
+			activeBoard.board[0] === activeBoard.board[2]
+		) {
+			console.log(activeBoard.board[0]);
+			return activeBoard.board[0];
+		}
 
-        let win4 = [0, 3, 6];
-        let win5 = [1, 4, 7];
-        let win6 = [2, 5, 8];
+		// const winningComb = [
+		// 	[0, 1, 2],
+		// 	[3, 4, 5],
+		// 	[6, 7, 8],
+		// 	[0, 3, 6],
+		// 	[1, 4, 7],
+		// 	[2, 5, 8],
+		// 	[0, 4, 8],
+		// 	[6, 4, 2],
+		// ]
 
-        let win7 = [0, 4, 8];
-        let win8 = [6, 4, 2];
+		// //console.log(winningComb);
+		// winningComb.forEach((combo, index) => {
+		// 	if (activeBoard.board[combo[0]] &&
+		// 		activeBoard.board[combo[0]] === activeBoard.board[combo[1]] &&
+		// 		activeBoard.board[combo[0]] === activeBoard.board[combo[2]]) {
+		// 			return	activeBoard.board[combo[0]]
+		// 		}
+		// })
+		//
+		// })
+		// winningComb.forEach((combo, index) => {
+		// 	if (activeBoard.board[row][0] &&
+		// 		activeBoard.board[row][0] === activeBoard.board[row][1] &&
+		// 		activeBoard.board[row][0] === activeBoard.board[row][2]) {
+		// 			return	activeBoard.board[row][0]
+		// 		}
+		// })
 
-        let draw = [];
-    }
- 
+		// let win1 = [0, 1, 2];
+		// let win2 = [3, 4, 5];
+		// let win3 = [6, 7, 8];
+		// let win4 = [0, 3, 6];
+		// let win5 = [1, 4, 7];
+		// let win6 = [2, 5, 8];
+		// let win7 = [0, 4, 8];
+		// let win8 = [6, 4, 2];
 
-	const playRound = (row, column) => {
-        console.log(row, column);
-		activeBoard.markCell(row, column, activePlayer);
-        console.log(activeBoard.getBoard()[row]);
+		// let draw = [];
+	};
 
-
-
+	const playRound = (cell) => {
+		activeBoard.markCell(cell, activePlayer);
+		console.log(endGame());
+		// if (endGame(row)) {
+		// 	let winner = endGame(row) === 'X' ? playerOne.name : playerTwo.name ;
+		//console.log(`Winner is ${winner}`);
+		// }
 		printNewRound();
 		switchTurns();
 	};
 
 	return {
 		playRound,
-        getActivePlayer,
+		getActivePlayer,
 	};
 })();
 
 //? AI
 
 // ! TESTING
-
-gameFlow.playRound(0, 0);
-gameFlow.playRound(1, 2);
-gameFlow.playRound(0, 1);
-gameFlow.playRound(2, 1);
-gameFlow.playRound(0, 2);
-
+// X starts
+gameFlow.playRound(0);
+gameFlow.playRound(3);
+gameFlow.playRound(1);
+gameFlow.playRound(4);
+gameFlow.playRound(2);
+gameFlow.playRound(6);
