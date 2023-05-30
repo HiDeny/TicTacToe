@@ -9,8 +9,6 @@ const Player = (name, marker) => {
 	return { name, marker };
 };
 
-const playerOne = Player('Player1', 'X');
-const playerTwo = Player('Player2', 'O');
 
 //* Game board
 // Module
@@ -31,6 +29,7 @@ const gameBoard = (() => {
 		if (cell > columns * rows) {
 			throw new Error('Stay in on the board!');
 		} else if (board[cell] !== '') {
+			console.log(board[cell]);
 			throw new Error('Field already taken!');
 		} else {
 			board[cell] = player.marker;
@@ -56,6 +55,9 @@ const gameFlow = (() => {
 	// Board
 	const activeBoard = gameBoard;
 
+	// Players
+	const playerOne = Player('Player1', 'X');
+	const playerTwo = Player('Player2', 'O');
 	// Switch turns
 	let players = [playerOne, playerTwo];
 	let activePlayer = players[0];
@@ -71,8 +73,9 @@ const gameFlow = (() => {
 	};
 
 	// Winning conditions
+	let winner = null;
+
 	const endGame = () => {
-		let winner = null;
 		const winningComb = [
 			[0, 1, 2],
 			[3, 4, 5],
@@ -97,20 +100,14 @@ const gameFlow = (() => {
 		return winner ? winner : activeBoard.board.includes('') ? null : 'T';
 	};
 
+	const getWinner = () => winner;
+
 	const playRound = (cell) => {
 		activeBoard.markCell(cell, activePlayer);
-		win = endGame();
-		if (win) {
-			if (win === 'T') {
-				console.log(`It's a TIE !`);
-			} else {
-				console.log(`Winner is ${activePlayer.name} !`);
-				printNewRound();
-
-			}
+		endGame();
+		if (winner) {
+			return winner;
 		} else {
-			console.log(`${activePlayer.name}'s turn`);
-			printNewRound();
 			switchTurns();
 		}
 	};
@@ -118,16 +115,85 @@ const gameFlow = (() => {
 	return {
 		playRound,
 		getActivePlayer,
+		getWinner,
 	};
 })();
 
 //? AI
 
+
+//* Display
+
+const displayControl = (() => {
+	// DOM
+	const mainDiv = document.querySelector('.main');
+	
+	const boardDiv = document.createElement('div');
+		  boardDiv.classList.add('boardDiv');
+	
+	const playerTurnDiv = document.createElement('div');
+		  playerTurnDiv.classList.add('turn');
+
+	// Setup
+	const game = gameFlow;
+
+	//* Screen Update
+	const screenUpdate = () => {
+		const winner = game.getWinner();
+		const board = gameBoard.getBoard();
+		const activePlayer = game.getActivePlayer();
+		
+	//TODO Display results
+	//TODO Allow players to pick their names
+
+	// Display player
+	playerTurnDiv.textContent = winner ? `Winner is ${activePlayer.name}!` : `${activePlayer.name}'s turn!`
+	
+	//TODO Display board
+		boardDiv.textContent = '';
+
+		board.forEach((cell, index) => {
+			const cellButton = document.createElement('button');
+		      	  cellButton.classList.add('cell');
+			  	  cellButton.dataset.cell = index;
+			  	  cellButton.textContent = cell;
+			
+			boardDiv.appendChild(cellButton);
+		});
+	}
+	
+	// Append
+	mainDiv.appendChild(playerTurnDiv);
+	mainDiv.appendChild(boardDiv);
+
+	//* Event listener
+	const clickHandlerBoard = (e) => {
+		const winner = game.getWinner();
+		if (winner) return;
+		const selectedCell = e.target.dataset.cell;
+		if (!selectedCell) return;
+		game.playRound(selectedCell);
+		screenUpdate();
+	}
+	boardDiv.addEventListener('click', clickHandlerBoard);
+	
+
+	
+	screenUpdate();
+
+
+
+	//TODO Button (RE)Start button
+})();
+
+
 // ! TESTING
-// X starts
-gameFlow.playRound(0);
-gameFlow.playRound(2);
-gameFlow.playRound(1);
-gameFlow.playRound(4);
-gameFlow.playRound(5);
-gameFlow.playRound(6);
+// // X starts
+// gameFlow.playRound(0);
+// gameFlow.playRound(2);
+// gameFlow.playRound(1);
+// gameFlow.playRound(4);
+// gameFlow.playRound(5);
+// gameFlow.playRound(6);
+
+displayControl;
