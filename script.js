@@ -10,6 +10,57 @@ const Player = (name, marker) => {
 };
 
 //TODO Allow players to pick their names
+// const pickNames = (() => {
+// 	let playerOne;
+// 	let playerTwo;
+// 	// Names
+// 	const getNames = () => {
+// 		const mainDiv = document.querySelector('.main');
+
+// 		const setNamesForm = document.createElement('form');
+// 			  setNamesForm.setAttribute('id', 'setNames');
+// 			  setNamesForm.setAttribute('action', '');
+// 			  setNamesForm.setAttribute('method', 'post');
+	
+// 			  setNamesForm.addEventListener('submit', (e) => {
+// 				e.preventDefault();
+// 				const formData = new FormData(setNamesForm);
+// 				const newNamesData = Object.fromEntries(formData.entries());
+// 				console.log(newNamesData);
+
+// 				playerOne = Player(newNamesData.name1, 'X');
+// 				playerTwo = Player(newNamesData.name2, 'O');
+// 			});
+		
+// 		const setName1 = document.createElement('input');
+// 			  setName1.setAttribute('type', 'text');
+// 			  setName1.setAttribute('id', 'name1');
+// 			  setName1.setAttribute('name', 'name1');
+// 			  setName1.setAttribute('placeholder', 'Player 1');
+	
+// 		const setName2 = document.createElement('input');
+// 			  setName2.setAttribute('type', 'text');
+// 			  setName2.setAttribute('id', 'name2');
+// 			  setName2.setAttribute('name', 'name2');
+// 			  setName2.setAttribute('placeholder', 'Player 2');
+	
+// 		const submitBtn = document.createElement('button');
+// 			  submitBtn.setAttribute('type', 'submit');
+// 			  submitBtn.setAttribute('class', 'submitBtn');
+// 			  submitBtn.innerText = 'Add!';
+		  
+	
+// 		setNamesForm.appendChild(setName1);
+// 		setNamesForm.appendChild(setName2);
+// 		setNamesForm.appendChild(submitBtn);
+	
+// 		mainDiv.appendChild(setNamesForm);
+// 		}
+
+	
+// 	return {getNames, playerOne, playerTwo};
+// })()
+
 
 //* Game board
 // Module
@@ -157,8 +208,13 @@ const displayControl = (() => {
 	// DOM
 	const mainDiv = document.querySelector('.main');
 
+	// Game
 	const boardDiv = document.createElement('div');
 	boardDiv.classList.add('boardDiv');
+
+	const boardDesk = document.createElement('div');
+	boardDesk.classList.add('boardDesk');
+
 
 	const playerTurnDiv = document.createElement('div');
 	playerTurnDiv.classList.add('turn');
@@ -170,10 +226,14 @@ const displayControl = (() => {
 	const pointsP2 = document.createElement('p');
 
 	//TODO Button (RE)Start button
+	const startDiv = document.createElement('div');
+		  startDiv.setAttribute('class', 'startDiv')
+
 	const resetBtn = document.createElement('button');
 	resetBtn.classList.add('resetBtn');
-	resetBtn.textContent = 'RESTART';
+	resetBtn.textContent = 'START';
 
+	startDiv.appendChild(resetBtn);
 	// Setup
 	const game = gameFlow;
 
@@ -196,7 +256,7 @@ const displayControl = (() => {
 		pointsP2.textContent = `P2: ${points.P2}`;
 
 		//TODO Display board
-		boardDiv.textContent = '';
+		boardDesk.textContent = '';
 
 		board.forEach((cell, index) => {
 			const cellButton = document.createElement('button');
@@ -204,17 +264,21 @@ const displayControl = (() => {
 			cellButton.dataset.cell = index;
 			cellButton.textContent = cell;
 
-			boardDiv.appendChild(cellButton);
+			boardDesk.appendChild(cellButton);
 		});
+
+		boardDiv.appendChild(boardDesk);
 	};
 
 	resetBtn.addEventListener('click', () => {
 		game.newGame();
 		screenUpdate();
+		resetBtn.textContent = 'RESTART';
+		
 	});
 
 	// Append
-	mainDiv.appendChild(resetBtn);
+	mainDiv.appendChild(startDiv);
 	pointsDiv.appendChild(pointsP1);
 	pointsDiv.appendChild(pointsP2);
 	mainDiv.appendChild(pointsDiv);
@@ -232,7 +296,6 @@ const displayControl = (() => {
 	};
 	boardDiv.addEventListener('click', clickHandlerBoard);
 
-	screenUpdate();
 })();
 
 // ! TESTING
@@ -244,4 +307,4 @@ const displayControl = (() => {
 // gameFlow.playRound(5);
 // gameFlow.playRound(6);
 
-displayControl;
+

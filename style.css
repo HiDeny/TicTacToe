@@ -1,9 +1,67 @@
-.main {
+* {
+    /* border: 1px gray solid; */
 
+}
+
+:root {
+    font-family: 'Helvetica';
+}
+
+.logo {
+    display: flex;
+    justify-content: center;
+}
+
+.startDiv {
+    display: flex;
+    justify-content: center;
+}
+
+.resetBtn {
+    font-size: 18px;
+    padding: 5px 10px;
+}
+
+.points {
+    display: flex;
+    justify-content: space-around;
+    font-size: 30px;
+    padding: 30px;
+}
+
+.points p {
+    margin: 0;
+    padding: 0;
+}
+
+.turn {
+    display: flex;
+    justify-content: center;
+    font-size: 25px;
+    padding: 15px;
 }
 
 .boardDiv {
-    display: grid;
-    grid-template-columns: repeat(3, 50px);
-    grid-template-rows: repeat(3, 50px);
+    display: flex;
+    justify-content: center;
 }
+
+.boardDesk {
+    display: grid;
+    grid-template-columns: repeat(3, 70px);
+    grid-template-rows: repeat(3, 70px);
+    gap: 5px;
+}
+
+.cell {
+    font-size: 35px;
+    border-radius: 10px;
+}
+
+
+
+
+
+
+
+  
