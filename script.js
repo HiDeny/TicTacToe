@@ -9,6 +9,7 @@ const Player = (name, marker) => {
 	return { name, marker };
 };
 
+//TODO Allow players to pick their names
 
 //* Game board
 // Module
@@ -41,7 +42,7 @@ const gameBoard = (() => {
 		}
 
 		return board;
-	}
+	};
 
 	// const printBoard = () => {
 	// 	console.log(board[0] + ' | ' + board[1] + ' | ' + board[2]);
@@ -82,9 +83,9 @@ const gameFlow = (() => {
 	// Winning conditions
 	let winner = null;
 	const points = {
-		P1 : 0,
-		P2 : 0,
-	}
+		P1: 0,
+		P2: 0,
+	};
 
 	const endGame = () => {
 		const winningComb = [
@@ -119,90 +120,104 @@ const gameFlow = (() => {
 		} else if (result === playerTwo.marker) {
 			points.P2++;
 		}
-	}
+	};
+
+	const getPoints = () => points;
 
 	const playRound = (cell) => {
 		activeBoard.markCell(cell, activePlayer);
 		endGame();
 		countPoints(winner);
 		if (winner) {
-			console.log('Points:');
-			console.log(`P1 : ${points.P1}`);
-			console.log(`P2 : ${points.P2}`);
-			return winner
-		};
-		switchTurns();	
+			return winner;
+		}
+		switchTurns();
 	};
 
 	const newGame = () => {
 		activeBoard.board = activeBoard.newBoard();
 		activePlayer = players[0];
 		winner = null;
-	}
+	};
 
 	return {
 		playRound,
 		getActivePlayer,
 		getWinner,
+		getPoints,
 		newGame,
 	};
 })();
 
 //? AI
 
-
 //* Display
 
 const displayControl = (() => {
 	// DOM
 	const mainDiv = document.querySelector('.main');
-	
+
 	const boardDiv = document.createElement('div');
-		  boardDiv.classList.add('boardDiv');
-	
+	boardDiv.classList.add('boardDiv');
+
 	const playerTurnDiv = document.createElement('div');
-		  playerTurnDiv.classList.add('turn');
+	playerTurnDiv.classList.add('turn');
+
+	const pointsDiv = document.createElement('div');
+	pointsDiv.classList.add('points');
+
+	const pointsP1 = document.createElement('p');
+	const pointsP2 = document.createElement('p');
 
 	//TODO Button (RE)Start button
 	const resetBtn = document.createElement('button');
-		  resetBtn.classList.add('resetBtn');
-		  resetBtn.textContent = 'RESTART';
+	resetBtn.classList.add('resetBtn');
+	resetBtn.textContent = 'RESTART';
 
 	// Setup
 	const game = gameFlow;
-	
 
 	//* Screen Update
 	const screenUpdate = () => {
 		const winner = game.getWinner();
 		const board = gameBoard.getBoard();
 		const activePlayer = game.getActivePlayer();
-		
-	//TODO Allow players to pick their names
+		const points = game.getPoints();
 
-	//TODO Display Players/Results
-	playerTurnDiv.textContent = winner === 'T' ? `It's a TIE!` : winner === activePlayer.marker ? `Winner is ${activePlayer.name}!` : `${activePlayer.name}'s turn!`;
+		//TODO Display Players/Results
+		playerTurnDiv.textContent =
+			winner === 'T'
+				? `It's a TIE!`
+				: winner === activePlayer.marker
+				? `Winner is ${activePlayer.name}!`
+				: `${activePlayer.name}'s turn!`;
 
-	//TODO Display board
+		pointsP1.textContent = `P1: ${points.P1}`;
+		pointsP2.textContent = `P2: ${points.P2}`;
+
+		//TODO Display board
 		boardDiv.textContent = '';
 
 		board.forEach((cell, index) => {
 			const cellButton = document.createElement('button');
-		      	  cellButton.classList.add('cell');
-			  	  cellButton.dataset.cell = index;
-			  	  cellButton.textContent = cell;
-			
+			cellButton.classList.add('cell');
+			cellButton.dataset.cell = index;
+			cellButton.textContent = cell;
+
 			boardDiv.appendChild(cellButton);
 		});
-	}
+	};
 
 	resetBtn.addEventListener('click', () => {
 		game.newGame();
 		screenUpdate();
-	})
-	
+	});
+
 	// Append
 	mainDiv.appendChild(resetBtn);
+	pointsDiv.appendChild(pointsP1);
+	pointsDiv.appendChild(pointsP2);
+	mainDiv.appendChild(pointsDiv);
 	mainDiv.appendChild(playerTurnDiv);
 	mainDiv.appendChild(boardDiv);
 
@@ -214,14 +229,11 @@ const displayControl = (() => {
 		if (!selectedCell) return;
 		game.playRound(selectedCell);
 		screenUpdate();
-	}
+	};
 	boardDiv.addEventListener('click', clickHandlerBoard);
-	
 
-	
 	screenUpdate();
 })();
-
 
 // ! TESTING
 // // X starts
