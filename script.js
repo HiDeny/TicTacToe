@@ -26,27 +26,24 @@ const gameBoard = (() => {
 
 	// Mark Cell
 	const markCell = (cell, player) => {
-		if (cell > columns * rows) {
-			throw new Error('Stay in on the board!');
-		} else if (board[cell] !== '') {
-			console.log(board[cell]);
+		if (board[cell] !== '') {
 			throw new Error('Field already taken!');
 		} else {
 			board[cell] = player.marker;
 		}
 	};
 
-	const printBoard = () => {
-		console.log(board[0] + ' | ' + board[1] + ' | ' + board[2]);
-		console.log('---------');
-		console.log(board[3] + ' | ' + board[4] + ' | ' + board[5]);
-		console.log('---------');
-		console.log(board[6] + ' | ' + board[7] + ' | ' + board[8]);
-		console.log(' ');
-		console.log(' ');
-	};
+	// const printBoard = () => {
+	// 	console.log(board[0] + ' | ' + board[1] + ' | ' + board[2]);
+	// 	console.log('---------');
+	// 	console.log(board[3] + ' | ' + board[4] + ' | ' + board[5]);
+	// 	console.log('---------');
+	// 	console.log(board[6] + ' | ' + board[7] + ' | ' + board[8]);
+	// 	console.log(' ');
+	// 	console.log(' ');
+	// };
 
-	return { markCell, printBoard, getBoard, board };
+	return { markCell, getBoard, board };
 })();
 
 //* Game flow
@@ -68,12 +65,16 @@ const gameFlow = (() => {
 
 	const getActivePlayer = () => activePlayer;
 
-	const printNewRound = () => {
-		activeBoard.printBoard();
-	};
+	// const printNewRound = () => {
+	// 	activeBoard.printBoard();
+	// };
 
 	// Winning conditions
 	let winner = null;
+	const points = {
+		P1 : 0,
+		P2 : 0,
+	}
 
 	const endGame = () => {
 		const winningComb = [
@@ -97,19 +98,27 @@ const gameFlow = (() => {
 			}
 		});
 
-		return winner ? winner : activeBoard.board.includes('') ? null : 'T';
+		winner = winner ? winner : activeBoard.board.includes('') ? null : 'T';
 	};
 
 	const getWinner = () => winner;
 
+	const countPoints = (result) => {
+		if (result === playerOne.marker) {
+			points.P1++;
+		} else if (result === playerTwo.marker) {
+			points.P2++;
+		}
+	}
+
 	const playRound = (cell) => {
 		activeBoard.markCell(cell, activePlayer);
 		endGame();
-		if (winner) {
-			return winner;
-		} else {
-			switchTurns();
-		}
+		countPoints(winner);
+		console.log(points.P1);
+		console.log(points.P2);
+		if (winner) return winner;
+		switchTurns();	
 	};
 
 	return {
@@ -143,12 +152,11 @@ const displayControl = (() => {
 		const board = gameBoard.getBoard();
 		const activePlayer = game.getActivePlayer();
 		
-	//TODO Display results
 	//TODO Allow players to pick their names
 
-	// Display player
-	playerTurnDiv.textContent = winner ? `Winner is ${activePlayer.name}!` : `${activePlayer.name}'s turn!`
-	
+	//TODO Display Players/Results
+	playerTurnDiv.textContent = winner === 'T' ? `It's a TIE!` : winner === activePlayer.marker ? `Winner is ${activePlayer.name}!` : `${activePlayer.name}'s turn!`;
+
 	//TODO Display board
 		boardDiv.textContent = '';
 
@@ -184,6 +192,8 @@ const displayControl = (() => {
 
 
 	//TODO Button (RE)Start button
+	
+
 })();
 
 
