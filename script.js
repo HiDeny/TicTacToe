@@ -14,53 +14,11 @@ const Player = (name, marker) => {
 // 	let playerOne;
 // 	let playerTwo;
 // 	// Names
-// 	const getNames = () => {
-// 		const mainDiv = document.querySelector('.main');
-
-// 		const setNamesForm = document.createElement('form');
-// 			  setNamesForm.setAttribute('id', 'setNames');
-// 			  setNamesForm.setAttribute('action', '');
-// 			  setNamesForm.setAttribute('method', 'post');
-	
-// 			  setNamesForm.addEventListener('submit', (e) => {
-// 				e.preventDefault();
-// 				const formData = new FormData(setNamesForm);
-// 				const newNamesData = Object.fromEntries(formData.entries());
-// 				console.log(newNamesData);
-
-// 				playerOne = Player(newNamesData.name1, 'X');
-// 				playerTwo = Player(newNamesData.name2, 'O');
-// 			});
-		
-// 		const setName1 = document.createElement('input');
-// 			  setName1.setAttribute('type', 'text');
-// 			  setName1.setAttribute('id', 'name1');
-// 			  setName1.setAttribute('name', 'name1');
-// 			  setName1.setAttribute('placeholder', 'Player 1');
-	
-// 		const setName2 = document.createElement('input');
-// 			  setName2.setAttribute('type', 'text');
-// 			  setName2.setAttribute('id', 'name2');
-// 			  setName2.setAttribute('name', 'name2');
-// 			  setName2.setAttribute('placeholder', 'Player 2');
-	
-// 		const submitBtn = document.createElement('button');
-// 			  submitBtn.setAttribute('type', 'submit');
-// 			  submitBtn.setAttribute('class', 'submitBtn');
-// 			  submitBtn.innerText = 'Add!';
-		  
-	
-// 		setNamesForm.appendChild(setName1);
-// 		setNamesForm.appendChild(setName2);
-// 		setNamesForm.appendChild(submitBtn);
-	
-// 		mainDiv.appendChild(setNamesForm);
-// 		}
 
 	
-// 	return {getNames, playerOne, playerTwo};
-// })()
 
+// 	return { playerOne, playerTwo };
+// })();
 
 //* Game board
 // Module
@@ -115,16 +73,66 @@ const gameFlow = (() => {
 	const activeBoard = gameBoard;
 
 	// Players
-	const playerOne = Player('Player1', 'X');
-	const playerTwo = Player('Player2', 'O');
-	// Switch turns
+	let playerOne = Player('Player1', 'X');
+	let playerTwo = Player('Player2', 'O');
 	let players = [playerOne, playerTwo];
+
+
+	const changeNames = () => {
+		const mainDiv = document.querySelector('.main');
+
+		const setNamesForm = document.createElement('form');
+		setNamesForm.setAttribute('id', 'setNames');
+		setNamesForm.setAttribute('action', '');
+		setNamesForm.setAttribute('method', 'post');
+	
+		setNamesForm.addEventListener('submit', (e) => {
+			e.preventDefault();
+			const formData = new FormData(setNamesForm);
+			const newNamesData = Object.fromEntries(formData.entries());
+	
+			playerOne = newNamesData.name1 ? Player(newNamesData.name1, 'X') : playerOne;
+			playerTwo = newNamesData.name2 ? Player(newNamesData.name2, 'O') : playerTwo;
+	
+			return playerOne, playerTwo;
+		});
+	
+		const setName1 = document.createElement('input');
+		setName1.setAttribute('type', 'text');
+		setName1.setAttribute('id', 'name1');
+		setName1.setAttribute('name', 'name1');
+		setName1.setAttribute('placeholder', 'Player 1');
+	
+		const setName2 = document.createElement('input');
+		setName2.setAttribute('type', 'text');
+		setName2.setAttribute('id', 'name2');
+		setName2.setAttribute('name', 'name2');
+		setName2.setAttribute('placeholder', 'Player 2');
+	
+		const submitBtn = document.createElement('button');
+		submitBtn.setAttribute('type', 'submit');
+		submitBtn.setAttribute('class', 'submitBtn');
+		submitBtn.innerText = 'Add!';
+	
+		setNamesForm.appendChild(setName1);
+		setNamesForm.appendChild(setName2);
+		setNamesForm.appendChild(submitBtn);
+	
+		mainDiv.appendChild(setNamesForm);
+
+		players = [playerOne, playerTwo];
+	}
+
+	
+	// Switch turns
+	changeNames();
 	let activePlayer = players[0];
 
 	const switchTurns = () => {
 		activePlayer = activePlayer === players[0] ? players[1] : players[0];
 	};
 
+	const getPlayers = () => players;
 	const getActivePlayer = () => activePlayer;
 
 	// const printNewRound = () => {
@@ -192,7 +200,9 @@ const gameFlow = (() => {
 	};
 
 	return {
+		changeNames,
 		playRound,
+		getPlayers,
 		getActivePlayer,
 		getWinner,
 		getPoints,
@@ -215,7 +225,6 @@ const displayControl = (() => {
 	const boardDesk = document.createElement('div');
 	boardDesk.classList.add('boardDesk');
 
-
 	const playerTurnDiv = document.createElement('div');
 	playerTurnDiv.classList.add('turn');
 
@@ -227,7 +236,7 @@ const displayControl = (() => {
 
 	//TODO Button (RE)Start button
 	const startDiv = document.createElement('div');
-		  startDiv.setAttribute('class', 'startDiv')
+	startDiv.setAttribute('class', 'startDiv');
 
 	const resetBtn = document.createElement('button');
 	resetBtn.classList.add('resetBtn');
@@ -241,6 +250,7 @@ const displayControl = (() => {
 	const screenUpdate = () => {
 		const winner = game.getWinner();
 		const board = gameBoard.getBoard();
+		const players = game.getPlayers();
 		const activePlayer = game.getActivePlayer();
 		const points = game.getPoints();
 
@@ -252,8 +262,8 @@ const displayControl = (() => {
 				? `Winner is ${activePlayer.name}!`
 				: `${activePlayer.name}'s turn!`;
 
-		pointsP1.textContent = `P1: ${points.P1}`;
-		pointsP2.textContent = `P2: ${points.P2}`;
+		pointsP1.textContent = `${players[0].name}: ${points.P1}`;
+		pointsP2.textContent = `${players[1].name}: ${points.P2}`;
 
 		//TODO Display board
 		boardDesk.textContent = '';
@@ -271,10 +281,10 @@ const displayControl = (() => {
 	};
 
 	resetBtn.addEventListener('click', () => {
+		game.changeNames();
 		game.newGame();
 		screenUpdate();
 		resetBtn.textContent = 'RESTART';
-		
 	});
 
 	// Append
@@ -295,7 +305,6 @@ const displayControl = (() => {
 		screenUpdate();
 	};
 	boardDiv.addEventListener('click', clickHandlerBoard);
-
 })();
 
 // ! TESTING
@@ -306,5 +315,3 @@ const displayControl = (() => {
 // gameFlow.playRound(4);
 // gameFlow.playRound(5);
 // gameFlow.playRound(6);
-
-
