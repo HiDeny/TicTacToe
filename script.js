@@ -15,7 +15,7 @@ const Player = (name, marker) => {
 const gameBoard = (() => {
 	const rows = 3;
 	const columns = 3;
-	const board = [];
+	let board = [];
 
 	// Console board, 2d array
 	for (let i = 0; i < rows * columns; i++) {
@@ -33,6 +33,16 @@ const gameBoard = (() => {
 		}
 	};
 
+	const newBoard = () => {
+		board = [];
+
+		for (let i = 0; i < rows * columns; i++) {
+			board[i] = '';
+		}
+
+		return board;
+	}
+
 	// const printBoard = () => {
 	// 	console.log(board[0] + ' | ' + board[1] + ' | ' + board[2]);
 	// 	console.log('---------');
@@ -43,7 +53,7 @@ const gameBoard = (() => {
 	// 	console.log(' ');
 	// };
 
-	return { markCell, getBoard, board };
+	return { markCell, getBoard, newBoard, board };
 })();
 
 //* Game flow
@@ -115,16 +125,26 @@ const gameFlow = (() => {
 		activeBoard.markCell(cell, activePlayer);
 		endGame();
 		countPoints(winner);
-		console.log(points.P1);
-		console.log(points.P2);
-		if (winner) return winner;
+		if (winner) {
+			console.log('Points:');
+			console.log(`P1 : ${points.P1}`);
+			console.log(`P2 : ${points.P2}`);
+			return winner
+		};
 		switchTurns();	
 	};
+
+	const newGame = () => {
+		activeBoard.board = activeBoard.newBoard();
+		activePlayer = players[0];
+		winner = null;
+	}
 
 	return {
 		playRound,
 		getActivePlayer,
 		getWinner,
+		newGame,
 	};
 })();
 
@@ -143,8 +163,14 @@ const displayControl = (() => {
 	const playerTurnDiv = document.createElement('div');
 		  playerTurnDiv.classList.add('turn');
 
+	//TODO Button (RE)Start button
+	const resetBtn = document.createElement('button');
+		  resetBtn.classList.add('resetBtn');
+		  resetBtn.textContent = 'RESTART';
+
 	// Setup
 	const game = gameFlow;
+	
 
 	//* Screen Update
 	const screenUpdate = () => {
@@ -169,8 +195,14 @@ const displayControl = (() => {
 			boardDiv.appendChild(cellButton);
 		});
 	}
+
+	resetBtn.addEventListener('click', () => {
+		game.newGame();
+		screenUpdate();
+	})
 	
 	// Append
+	mainDiv.appendChild(resetBtn);
 	mainDiv.appendChild(playerTurnDiv);
 	mainDiv.appendChild(boardDiv);
 
@@ -188,12 +220,6 @@ const displayControl = (() => {
 
 	
 	screenUpdate();
-
-
-
-	//TODO Button (RE)Start button
-	
-
 })();
 
 
