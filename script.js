@@ -318,6 +318,9 @@ const displayControl = (() => {
 	};
 
 	
+	//? Ai
+	// Set timeout func
+
 	
 	//* Event listener
 	const clickHandlerBoard = (e) => {
@@ -333,7 +336,7 @@ const displayControl = (() => {
 			game.playRound(selectedCell);
 			screenUpdate();
 			
-		} else if (activePlayer.name === 'Ai' && !winner) {
+		} else if (activePlayer.name === 'Ai') {
 			console.log(board);
 			console.log(aiCell);
 			game.playRound(aiCell);
