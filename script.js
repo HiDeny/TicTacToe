@@ -15,14 +15,14 @@ const gameBoard = (() => {
 
 	// Console board, 2d array
 	for (let i = 0; i < rows * columns; i++) {
-		board[i] = '';
+		board[i] = i;
 	}
 
 	const getBoard = () => board;
 
 	// Mark Cell
 	const markCell = (cell, player) => {
-		if (board[cell] !== '') {
+		if (board[cell] == 'X' || board[cell] == 'O') {
 			throw new Error('Field already taken!');
 		} else {
 			board[cell] = player.marker;
@@ -33,7 +33,7 @@ const gameBoard = (() => {
 		board = [];
 
 		for (let i = 0; i < rows * columns; i++) {
-			board[i] = '';
+			board[i] = i;
 		}
 
 		return board;
@@ -54,20 +54,7 @@ const gameFlow = (() => {
 	let players = [playerOne, playerTwo];
 	let newNames = [];
 
-	//? AI
-	const aiPlayer = (board, player) => {
-			// Pick marker for Player
-			playerTwo = Player('Ai', 'O');
-			// Setup AI - Easy, pick random moves
-			const emptyIndexes = (board) => {
-				return board.filter((s) => s != 'O' && s != 'X');
-			}
-			console.log(emptyIndexes(board));
-			// Setup AI - Medium, pick random moves + minimax
-			// Setup AI - Unbeatable, minimax only 
-			// 
-	}
-	aiPlayer(activeBoard.board, playerOne);
+
 	const setNames = (newNames) => {
 		playerOne = newNames[0] ? Player(newNames[0], 'X') : playerOne;
 		playerTwo = newNames[1] ? Player(newNames[1], 'O') : playerTwo;
@@ -78,6 +65,28 @@ const gameFlow = (() => {
 	
 	// Switch turns
 	let activePlayer = players[0];
+
+	//? AI
+	const aiPlayer = (board, player) => {
+		// Pick marker for Player
+		const emptyIndexes = (board) => {
+			return board.filter((s) => s != 'O' && s != 'X');
+		}
+		// Setup AI - Easy, pick random moves
+		let randomIndex = Math.floor(Math.random() * emptyIndexes(board).length);
+		let randomCell = emptyIndexes(board)[randomIndex];
+		console.log(emptyIndexes.length);
+		console.log(randomCell);
+		// if (activePlayer.name === 'Ai') {
+			
+		// }
+		return randomCell;
+
+		// Setup AI - Medium, pick random moves + minimax
+		// Setup AI - Unbeatable, minimax only 
+		// 
+}
+
 
 	const switchTurns = () => {
 		activePlayer = activePlayer === players[0] ? players[1] : players[0];
@@ -116,7 +125,8 @@ const gameFlow = (() => {
 			}
 		});
 
-		winner = winner ? winner : activeBoard.board.includes('') ? null : 'T';
+		const emptyCells = (board) => board.filter((s) => s != 'X' && s != 'O');
+		winner = winner ? winner : emptyCells(activeBoard.board).length > 0 ? null : 'T';
 	};
 
 	const getWinner = () => winner;
@@ -133,8 +143,6 @@ const gameFlow = (() => {
 
 	const playRound = (cell) => {
 		activeBoard.markCell(cell, activePlayer);
-		aiPlayer(activeBoard.board, playerOne);
-
 		endGame();
 		countPoints(winner);
 		if (winner) {
@@ -263,6 +271,7 @@ const displayControl = (() => {
 	mainDiv.appendChild(playerTurnDiv);
 	mainDiv.appendChild(boardDiv);
 	
+
 	
 	// Setup
 	const game = gameFlow;
@@ -293,7 +302,7 @@ const displayControl = (() => {
 			const cellButton = document.createElement('button');
 			cellButton.classList.add('cell');
 			cellButton.dataset.cell = index;
-			cellButton.textContent = cell;
+			cellButton.textContent = cell === 'X' || cell === 'O' ? cell : '';
 
 			if (cellButton.textContent === 'X') {
 				cellButton.classList.add('red');
@@ -301,7 +310,6 @@ const displayControl = (() => {
 				cellButton.classList.add('blue');	
 			}
 
-				
 
 			boardDesk.appendChild(cellButton);
 		});
@@ -310,15 +318,29 @@ const displayControl = (() => {
 	};
 
 	
+	
 	//* Event listener
 	const clickHandlerBoard = (e) => {
-		let activePlayer = game.getActivePlayer();
 		const winner = game.getWinner();
 		if (winner) return;
-		const selectedCell = e.target.dataset.cell;
-		if (!selectedCell) return;
-		game.playRound(selectedCell);
-		screenUpdate();
+		const activePlayer = game.getActivePlayer();
+		//? AI
+		const board = gameBoard.getBoard();
+		aiCell = game.aiPlayer(board, activePlayer);
+		if (activePlayer.name !== 'Ai') {
+			const selectedCell = e.target.dataset.cell;
+			if (!selectedCell) return;
+			game.playRound(selectedCell);
+			screenUpdate();
+			
+		} else if (activePlayer.name === 'Ai' && !winner) {
+			console.log(board);
+			console.log(aiCell);
+			game.playRound(aiCell);
+			screenUpdate();
+		}
+
+		
 	};
 	boardDiv.addEventListener('click', clickHandlerBoard);
 })();
