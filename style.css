@@ -362,6 +362,7 @@
 }
 
 :root {
+    background-color: #F2CEAE;
     font-family: 'Press Start 2P','Helvetica';
 }
 
@@ -427,14 +428,16 @@
 .cell {
     font-size: 35px;
     border-radius: 10px;
+    background-color: #F2F2F2;
+    border: 0;
 }
 
 .red {
-    background-color: red;
+    color: #D95555;
 }
 
 .blue {
-    background-color: blue;
+    color: #0468BF;
 }
 
 
