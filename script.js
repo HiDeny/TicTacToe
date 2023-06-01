@@ -9,16 +9,6 @@ const Player = (name, marker) => {
 	return { name, marker };
 };
 
-//TODO Allow players to pick their names
-// const pickNames = (() => {
-// 	let playerOne;
-// 	let playerTwo;
-// 	// Names
-
-	
-
-// 	return { playerOne, playerTwo };
-// })();
 
 //* Game board
 // Module
@@ -53,15 +43,15 @@ const gameBoard = (() => {
 		return board;
 	};
 
-	// const printBoard = () => {
-	// 	console.log(board[0] + ' | ' + board[1] + ' | ' + board[2]);
-	// 	console.log('---------');
-	// 	console.log(board[3] + ' | ' + board[4] + ' | ' + board[5]);
-	// 	console.log('---------');
-	// 	console.log(board[6] + ' | ' + board[7] + ' | ' + board[8]);
-	// 	console.log(' ');
-	// 	console.log(' ');
-	// };
+	//// const printBoard = () => {
+	//// 	console.log(board[0] + ' | ' + board[1] + ' | ' + board[2]);
+	//// 	console.log('---------');
+	//// 	console.log(board[3] + ' | ' + board[4] + ' | ' + board[5]);
+	//// 	console.log('---------');
+	//// 	console.log(board[6] + ' | ' + board[7] + ' | ' + board[8]);
+	//// 	console.log(' ');
+	//// 	console.log(' ');
+	//// };
 
 	return { markCell, getBoard, newBoard, board };
 })();
@@ -76,10 +66,14 @@ const gameFlow = (() => {
 	let playerOne = Player('Player1', 'X');
 	let playerTwo = Player('Player2', 'O');
 	let players = [playerOne, playerTwo];
+	let newNames = [];
 
-
+	//TODO Allow players to pick their names
 	const changeNames = () => {
 		const mainDiv = document.querySelector('.main');
+
+		const formDiv = document.createElement('div');
+			  formDiv.classList.add('formDiv');
 
 		const setNamesForm = document.createElement('form');
 		setNamesForm.setAttribute('id', 'setNames');
@@ -91,10 +85,10 @@ const gameFlow = (() => {
 			const formData = new FormData(setNamesForm);
 			const newNamesData = Object.fromEntries(formData.entries());
 	
-			playerOne = newNamesData.name1 ? Player(newNamesData.name1, 'X') : playerOne;
-			playerTwo = newNamesData.name2 ? Player(newNamesData.name2, 'O') : playerTwo;
-	
-			return playerOne, playerTwo;
+			newNames[0] = newNamesData.name1;
+			newNames[1] = newNamesData.name2;
+
+			formDiv.remove();
 		});
 	
 		const setName1 = document.createElement('input');
@@ -113,12 +107,19 @@ const gameFlow = (() => {
 		submitBtn.setAttribute('type', 'submit');
 		submitBtn.setAttribute('class', 'submitBtn');
 		submitBtn.innerText = 'Add!';
+		
 	
 		setNamesForm.appendChild(setName1);
 		setNamesForm.appendChild(setName2);
 		setNamesForm.appendChild(submitBtn);
-	
-		mainDiv.appendChild(setNamesForm);
+		formDiv.appendChild(setNamesForm);
+
+		mainDiv.appendChild(formDiv);
+	}
+
+	const setNames = () => {
+		playerOne = newNames[0] ? Player(newNames[0], 'X') : playerOne;
+		playerTwo = newNames[1] ? Player(newNames[1], 'O') : playerTwo;
 
 		players = [playerOne, playerTwo];
 	}
@@ -135,9 +136,9 @@ const gameFlow = (() => {
 	const getPlayers = () => players;
 	const getActivePlayer = () => activePlayer;
 
-	// const printNewRound = () => {
-	// 	activeBoard.printBoard();
-	// };
+	//  //const printNewRound = () => {
+	// 	//activeBoard.printBoard();
+	// //};
 
 	// Winning conditions
 	let winner = null;
@@ -200,7 +201,7 @@ const gameFlow = (() => {
 	};
 
 	return {
-		changeNames,
+		setNames,
 		playRound,
 		getPlayers,
 		getActivePlayer,
@@ -211,6 +212,9 @@ const gameFlow = (() => {
 })();
 
 //? AI
+const aiPlayer = () => {
+	
+}
 
 //* Display
 
@@ -281,7 +285,7 @@ const displayControl = (() => {
 	};
 
 	resetBtn.addEventListener('click', () => {
-		game.changeNames();
+		game.setNames();
 		game.newGame();
 		screenUpdate();
 		resetBtn.textContent = 'RESTART';
