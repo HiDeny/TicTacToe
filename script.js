@@ -47,13 +47,27 @@ const gameFlow = (() => {
 	// Board
 	const activeBoard = gameBoard;
 
+
 	// Players
 	let playerOne = Player('Player1', 'X');
 	let playerTwo = Player('Player2', 'O');
 	let players = [playerOne, playerTwo];
 	let newNames = [];
 
-
+	//? AI
+	const aiPlayer = (board, player) => {
+			// Pick marker for Player
+			playerTwo = Player('Ai', 'O');
+			// Setup AI - Easy, pick random moves
+			const emptyIndexes = (board) => {
+				return board.filter((s) => s != 'O' && s != 'X');
+			}
+			console.log(emptyIndexes(board));
+			// Setup AI - Medium, pick random moves + minimax
+			// Setup AI - Unbeatable, minimax only 
+			// 
+	}
+	aiPlayer(activeBoard.board, playerOne);
 	const setNames = (newNames) => {
 		playerOne = newNames[0] ? Player(newNames[0], 'X') : playerOne;
 		playerTwo = newNames[1] ? Player(newNames[1], 'O') : playerTwo;
@@ -118,8 +132,9 @@ const gameFlow = (() => {
 	const getPoints = () => points;
 
 	const playRound = (cell) => {
-		console.log(cell);
 		activeBoard.markCell(cell, activePlayer);
+		aiPlayer(activeBoard.board, playerOne);
+
 		endGame();
 		countPoints(winner);
 		if (winner) {
@@ -142,16 +157,12 @@ const gameFlow = (() => {
 		getWinner,
 		getPoints,
 		newGame,
+		aiPlayer,
 	};
 })();
 
-//? AI
-const aiPlayer = () => {
-
-}
 
 //* Display
-
 const displayControl = (() => {
 	// DOM
 	const mainDiv = document.querySelector('.main');
@@ -182,6 +193,8 @@ const displayControl = (() => {
 			game.newGame();
 			screenUpdate();
 		});
+
+	
 
 
 	//TODO Allow players to pick their names
@@ -284,11 +297,8 @@ const displayControl = (() => {
 
 			if (cellButton.textContent === 'X') {
 				cellButton.classList.add('red');
-				console.log(cellButton);	
-				console.log(cellButton.textContent);
 			} else if (cellButton.textContent === 'O') {
 				cellButton.classList.add('blue');	
-				console.log(cellButton.textContent);
 			}
 
 				
