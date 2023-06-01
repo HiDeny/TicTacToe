@@ -42,17 +42,6 @@ const gameBoard = (() => {
 
 		return board;
 	};
-
-	//// const printBoard = () => {
-	//// 	console.log(board[0] + ' | ' + board[1] + ' | ' + board[2]);
-	//// 	console.log('---------');
-	//// 	console.log(board[3] + ' | ' + board[4] + ' | ' + board[5]);
-	//// 	console.log('---------');
-	//// 	console.log(board[6] + ' | ' + board[7] + ' | ' + board[8]);
-	//// 	console.log(' ');
-	//// 	console.log(' ');
-	//// };
-
 	return { markCell, getBoard, newBoard, board };
 })();
 
@@ -213,7 +202,7 @@ const gameFlow = (() => {
 
 //? AI
 const aiPlayer = () => {
-	
+
 }
 
 //* Display
@@ -277,6 +266,13 @@ const displayControl = (() => {
 			cellButton.classList.add('cell');
 			cellButton.dataset.cell = index;
 			cellButton.textContent = cell;
+			cellButton.addEventListener('click', () => {
+				if (activePlayer.marker === 'X') {
+					cellButton.classList.add('red');		
+				} else {
+					cellButton.classList.add('blue');		
+				}
+			})
 
 			boardDesk.appendChild(cellButton);
 		});
@@ -301,6 +297,7 @@ const displayControl = (() => {
 
 	//* Event listener
 	const clickHandlerBoard = (e) => {
+		let activePlayer = game.getActivePlayer();
 		const winner = game.getWinner();
 		if (winner) return;
 		const selectedCell = e.target.dataset.cell;
