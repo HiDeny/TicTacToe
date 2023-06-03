@@ -1,10 +1,8 @@
-
 //* Player
 // Factory
 const Player = (name, marker) => {
 	return { name, marker };
 };
-
 
 //* Game board
 // Module
@@ -47,22 +45,19 @@ const gameFlow = (() => {
 	// Board
 	const activeBoard = gameBoard;
 
-
 	// Players
 	let playerOne = Player('Player1', 'X');
 	let playerTwo = Player('Player2', 'O');
 	let players = [playerOne, playerTwo];
 	let newNames = [];
 
-
 	const setNames = (newNames) => {
 		playerOne = newNames[0] ? Player(newNames[0], 'X') : playerOne;
 		playerTwo = newNames[1] ? Player(newNames[1], 'O') : playerTwo;
 
 		players = [playerOne, playerTwo];
-	}
+	};
 
-	
 	// Switch turns
 	let activePlayer = players[0];
 
@@ -72,127 +67,110 @@ const gameFlow = (() => {
 		// Empty cells
 		const emptyIndexes = (board) => {
 			return board.filter((s) => s != 'O' && s != 'X');
-		}
+		};
 
-		// Setup AI - Unbeatable, minimax only 
-		// Setup minimax
+		// Winning?
+		console.log(player);
 		const winning = (board, player) => {
-			let result = false;
-			const winningComb = [
-				[0, 1, 2],
-				[3, 4, 5],
-				[6, 7, 8],
-				[0, 3, 6],
-				[1, 4, 7],
-				[2, 5, 8],
-				[0, 4, 8],
-				[6, 4, 2],
-			];
-			
-			winningComb.forEach((combo, index) => {
-				if (
-					board[combo[0]] === player.marker &&
-					board[combo[0]] === board[combo[1]] &&
-					board[combo[0]] === board[combo[2]]
-				) {
-					result = true;
-				}
-			});
-			 
-			return result;
-		}
-	
-
-		// The main minimax func
-		const minimax = (newBoard, player) => {
-			let huPlayer = 'O';
-			let aiPlayer = 'X';
-			// console.log(player);
-
-			// Free spots
-			let availSpots = emptyIndexes(newBoard);
-			// console.log(newBoard);
-
-			//Check terminal states, win, lose, tie
-			if (winning(newBoard, huPlayer)) {
-				// console.log('Test1');
-				return {score:-10};
-			} else if (winning(newBoard, aiPlayer)){
-				// console.log('Test2');
-				return {score:10};
-			} else if (availSpots.length === 0){
-				// console.log('Test3');
-				return {score:0};
-			}
-
-			// Collect all objects
-			let moves = [];
-
-			for (let i = 0; i < availSpots.length; i++) {
-				let move = {};
-				// console.log(i);
-				move.index = newBoard[availSpots[i]];
-				// console.log(availSpots.length);
-				newBoard[availSpots[i]] = player;
-				// console.log(player);
-				if (player === aiPlayer){
-					let result = minimax(newBoard, huPlayer);
-					move.score = result.score;
-				} else {
-					let result = minimax(newBoard, aiPlayer);
-					move.score = result.score;
-				}
-
-				newBoard[availSpots[i]] = move.index;
-				moves.push(move);
-			}
-
-			// console.log('Will this get there ?');
-
-			let bestMove;
-			if (player === aiPlayer) {
-				let bestScore = -10000;
-				for(let i = 0; i < moves.length; i++) {
-					if(moves[i].score > bestScore){
-						bestScore = moves[i].score;
-						bestMove = i;
-					}
-				}
+			if (
+				(board[0] == player && board[1] == player && board[2] == player) ||
+				(board[3] == player && board[4] == player && board[5] == player) ||
+				(board[6] == player && board[7] == player && board[8] == player) ||
+				(board[0] == player && board[3] == player && board[6] == player) ||
+				(board[1] == player && board[4] == player && board[7] == player) ||
+				(board[2] == player && board[5] == player && board[8] == player) ||
+				(board[0] == player && board[4] == player && board[8] == player) ||
+				(board[2] == player && board[4] == player && board[6] == player)
+			) {
+				return true;
 			} else {
-				let bestScore = 10000;
-				for (let i = 0; i < moves.length; i++) {
-					if (moves[i].score < bestScore) {
-						bestScore = moves[i].score;
-						bestMove = i;
-					}
-				}
+				return false;
 			}
-
-			// console.log('Will it stop?');
-			return moves[bestMove];
 		}
 
-		
+		// Setup AI - Unbeatable, minimax only
+		// Setup minimax
+
+		const unbAi = () => {
+			console.log(board);
+			console.log(winning(board, 'X'));
+
+			// The main minimax func
+			const minimax = (newBoard, player) => {
+				// Free spots
+				let availSpots = emptyIndexes(newBoard);
+
+				//Check terminal states, win, lose, tie
+				if (winning(newBoard, 'O')) {
+					// console.log('Test1');
+					return { score: -10 };
+				} else if (winning(newBoard, 'X')) {
+					// console.log('Test2');
+					return { score: 10 };
+				} else if (availSpots.length === 0) {
+					return { score: 0 };
+				}
+
+				// Collect all objects
+				let moves = [];
+
+				for (let i = 0; i < availSpots.length; i++) {
+					let move = {};
+					move.index = newBoard[availSpots[i]];
+
+					newBoard[availSpots[i]] = player;
+					if (player === 'X') {
+						let result = minimax(newBoard, 'O');
+						move.score = result.score;
+					} else {
+						let result = minimax(newBoard, 'X');
+						move.score = result.score;
+					}
+
+					newBoard[availSpots[i]] = move.index;
+
+					moves.push(move);
+				}
+
+				let bestMove;
+				if (player === 'X') {
+					let bestScore = -10000;
+					for (let i = 0; i < moves.length; i++) {
+						if (moves[i].score > bestScore) {
+							bestScore = moves[i].score;
+							bestMove = i;
+						}
+					}
+				} else {
+					let bestScore = 10000;
+					for (let i = 0; i < moves.length; i++) {
+						if (moves[i].score < bestScore) {
+							bestScore = moves[i].score;
+							bestMove = i;
+						}
+					}
+				}
+
+				return moves[bestMove];
+			};
+			console.log(minimax(board, 'X'));
+			nextMove = minimax(board, 'X').index;
+		};
+
 		// Setup AI - Easy, pick random moves
 		const easyAi = () => {
 			let randomIndex = Math.floor(Math.random() * emptyIndexes(board).length);
 			let randomCell = emptyIndexes(board)[randomIndex];
 			nextMove = randomCell;
-		}
+		};
 
 		// Setup AI - Medium, pick random moves + minimax
-		const impAi = () => {
-			nextMove = minimax(board, player).index;
-		}
-			
-					
-		
+
 		// easyAi();
-		impAi();
+		unbAi();
 		console.log(nextMove);
 		return nextMove;
-	}
-
+	};
 
 	const switchTurns = () => {
 		activePlayer = activePlayer === players[0] ? players[1] : players[0];
@@ -200,7 +178,6 @@ const gameFlow = (() => {
 
 	const getPlayers = () => players;
 	const getActivePlayer = () => activePlayer;
-
 
 	// Winning conditions
 	let winner = null;
@@ -232,7 +209,11 @@ const gameFlow = (() => {
 		});
 
 		const emptyCells = (board) => board.filter((s) => s != 'X' && s != 'O');
-		winner = winner ? winner : emptyCells(activeBoard.board).length > 0 ? null : 'T';
+		winner = winner
+			? winner
+			: emptyCells(activeBoard.board).length > 0
+			? null
+			: 'T';
 	};
 
 	const getWinner = () => winner;
@@ -275,7 +256,6 @@ const gameFlow = (() => {
 	};
 })();
 
-
 //* Display
 const displayControl = (() => {
 	// DOM
@@ -298,7 +278,7 @@ const displayControl = (() => {
 
 	//TODO Ai
 	let nextStep = true;
-	const aiPlayerMove = () => { 
+	const aiPlayerMove = () => {
 		//? AI
 		const activePlayer = game.getActivePlayer();
 		const board = gameBoard.getBoard();
@@ -308,7 +288,7 @@ const displayControl = (() => {
 		console.log(board);
 		game.playRound(aiCell);
 		screenUpdate();
-	}
+	};
 
 	const onlyAiGame = () => {
 		nextStep = false;
@@ -320,33 +300,30 @@ const displayControl = (() => {
 		setTimeout(aiPlayerMove, 1500);
 		// Next round
 		setTimeout(onlyAiGame, 2000);
-	}
+	};
 
 	//TODO Button (RE)Start button
 	const startDiv = document.createElement('div');
 	startDiv.setAttribute('class', 'startDiv');
 
 	const resetBtn = document.createElement('button');
-		  resetBtn.classList.add('resetBtn');
-		  resetBtn.textContent = 'RESTART';
-		  resetBtn.addEventListener('click', () => {
-			const players = game.getPlayers();
-			game.newGame();
-			if (players[0].name === 'Ai' && players[1].name === 'Ai') {
-				console.log('Only AI game');
-				onlyAiGame();
-			} else if (players[0].name === 'Ai' && players[1].name !== 'Ai') {
-				nextStep = false;
-				setTimeout(aiPlayerMove, 1000);
-				setTimeout(( ) => {
-					nextStep = true;
-				}, 1200);
-			}
-			screenUpdate();
-		});
-
-	
-
+	resetBtn.classList.add('resetBtn');
+	resetBtn.textContent = 'RESTART';
+	resetBtn.addEventListener('click', () => {
+		const players = game.getPlayers();
+		game.newGame();
+		if (players[0].name === 'Ai' && players[1].name === 'Ai') {
+			console.log('Only AI game');
+			onlyAiGame();
+		} else if (players[0].name === 'Ai' && players[1].name !== 'Ai') {
+			nextStep = false;
+			setTimeout(aiPlayerMove, 1000);
+			setTimeout(() => {
+				nextStep = true;
+			}, 1200);
+		}
+		screenUpdate();
+	});
 
 	//TODO Allow players to pick their names
 	const changeNames = () => {
@@ -355,18 +332,18 @@ const displayControl = (() => {
 		const mainDiv = document.querySelector('.main');
 
 		const formDiv = document.createElement('div');
-			  formDiv.classList.add('formDiv');
+		formDiv.classList.add('formDiv');
 
 		const setNamesForm = document.createElement('form');
 		setNamesForm.setAttribute('id', 'setNames');
 		setNamesForm.setAttribute('action', '');
 		setNamesForm.setAttribute('method', 'post');
-	
+
 		setNamesForm.addEventListener('submit', (e) => {
 			e.preventDefault();
 			const formData = new FormData(setNamesForm);
 			const newNamesData = Object.fromEntries(formData.entries());
-	
+
 			newNames[0] = newNamesData.name1;
 			newNames[1] = newNamesData.name2;
 
@@ -375,14 +352,14 @@ const displayControl = (() => {
 			screenUpdate();
 
 			//? Ai
-			
+
 			if (newNames[0] === 'Ai' && newNames[1] === 'Ai') {
 				console.log('Only AI game');
 				onlyAiGame();
 			} else if (newNames[0] === 'Ai' && newNames[1] !== 'Ai') {
 				nextStep = false;
 				setTimeout(aiPlayerMove, 1000);
-				setTimeout(( ) => {
+				setTimeout(() => {
 					nextStep = true;
 				}, 1200);
 			}
@@ -390,35 +367,32 @@ const displayControl = (() => {
 			startDiv.appendChild(resetBtn);
 			formDiv.remove();
 		});
-	
+
 		const setName1 = document.createElement('input');
 		setName1.setAttribute('type', 'text');
 		setName1.setAttribute('id', 'name1');
 		setName1.setAttribute('name', 'name1');
 		setName1.setAttribute('placeholder', 'Player 1');
-	
+
 		const setName2 = document.createElement('input');
 		setName2.setAttribute('type', 'text');
 		setName2.setAttribute('id', 'name2');
 		setName2.setAttribute('name', 'name2');
 		setName2.setAttribute('placeholder', 'Player 2');
-	
+
 		const submitBtn = document.createElement('button');
 		submitBtn.setAttribute('type', 'submit');
 		submitBtn.setAttribute('class', 'submitBtn');
 		submitBtn.innerText = 'PLAY!';
 
-		
 		setNamesForm.appendChild(setName1);
 		setNamesForm.appendChild(setName2);
 		setNamesForm.appendChild(submitBtn);
 		formDiv.appendChild(setNamesForm);
 
 		mainDiv.appendChild(formDiv);
-	}
+	};
 	changeNames();
-
-
 
 	// Append
 	mainDiv.insertBefore(startDiv, mainDiv.firstChild);
@@ -427,9 +401,7 @@ const displayControl = (() => {
 	mainDiv.appendChild(pointsDiv);
 	mainDiv.appendChild(playerTurnDiv);
 	mainDiv.appendChild(boardDiv);
-	
 
-	
 	// Setup
 	const game = gameFlow;
 
@@ -464,9 +436,8 @@ const displayControl = (() => {
 			if (cellButton.textContent === 'X') {
 				cellButton.classList.add('red');
 			} else if (cellButton.textContent === 'O') {
-				cellButton.classList.add('blue');	
+				cellButton.classList.add('blue');
 			}
-
 
 			boardDesk.appendChild(cellButton);
 		});
@@ -474,7 +445,6 @@ const displayControl = (() => {
 		boardDiv.appendChild(boardDesk);
 	};
 
-		
 	//* Event listener
 	const clickHandlerBoard = (e) => {
 		const winner = game.getWinner();
@@ -489,12 +459,11 @@ const displayControl = (() => {
 			if (players[0].name === 'Ai' || players[1].name === 'Ai') {
 				nextStep = false;
 				setTimeout(aiPlayerMove, 1000);
-				setTimeout(( ) => {
+				setTimeout(() => {
 					nextStep = true;
 				}, 1200);
 			}
-		}	
-		
+		}
 	};
 	boardDiv.addEventListener('click', clickHandlerBoard);
 })();

@@ -164,12 +164,11 @@ let board2 = [
 
 
 let board3 = [
-    0, 1, 2,
-    3, 4, 5,
+    "X", "O", 2,
+    "X", 4, 5,
     6, 7, 8,
 ]
 
-console.log();
 console.log(minimax(board3, aiPlayer));
 
-console.log(minimax(board3, huPlayer).index);
+console.log(minimax(board3, huPlayer));
