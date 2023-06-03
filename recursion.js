@@ -22,7 +22,7 @@ function collatz(n) {
    | O | O
  */
 
-let origBoard = ['O', 1, 'X', 'X', 4, 'X', 6, 'O', 'O'];
+// let origBoard = ['O', 1, 'X', 'X', 'X', 'X', 6, 'O', 'O'];
 
 const huPlayer = 'O';
 
@@ -35,23 +35,54 @@ const emptyIndexes = (board) => {
 // Winning combos
 
 // winning combinations using the board indexies
-function winning(board, player){
-    if (
-    (board[0] == player && board[1] == player && board[2] == player) ||
-    (board[3] == player && board[4] == player && board[5] == player) ||
-    (board[6] == player && board[7] == player && board[8] == player) ||
-    (board[0] == player && board[3] == player && board[6] == player) ||
-    (board[1] == player && board[4] == player && board[7] == player) ||
-    (board[2] == player && board[5] == player && board[8] == player) ||
-    (board[0] == player && board[4] == player && board[8] == player) ||
-    (board[2] == player && board[4] == player && board[6] == player)
-    ) {
-    return true;
-    } else {
-    return false;
-    }
-   }
+// function winning(board, player){
+//     if (
+//     (board[0] == player && board[1] == player && board[2] == player) ||
+//     (board[3] == player && board[4] == player && board[5] == player) ||
+//     (board[6] == player && board[7] == player && board[8] == player) ||
+//     (board[0] == player && board[3] == player && board[6] == player) ||
+//     (board[1] == player && board[4] == player && board[7] == player) ||
+//     (board[2] == player && board[5] == player && board[8] == player) ||
+//     (board[0] == player && board[4] == player && board[8] == player) ||
+//     (board[2] == player && board[4] == player && board[6] == player)
+//     ) {
+//     return true;
+//     } else {
+//     return false;
+//     }
+//    }
 
+
+const winning = (board, player) => {
+    let result = false;
+    const winningComb = [
+        [0, 1, 2],
+        [3, 4, 5],
+        [6, 7, 8],
+        [0, 3, 6],
+        [1, 4, 7],
+        [2, 5, 8],
+        [0, 4, 8],
+        [6, 4, 2],
+    ];
+    
+    winningComb.forEach((combo, index) => {
+        if (
+            board[combo[0]] === player &&
+            board[combo[0]] === board[combo[1]] &&
+            board[combo[0]] === board[combo[2]]
+        ) {
+            result = true;
+        }
+    });
+     
+    return result;
+}
+
+let origBoard = ['O', 'O', 'O', 'X', 4, 'X', 6, 'O', 'O'];
+
+// console.log(winner(origBoard, huPlayer));
+console.log(winning(origBoard, huPlayer));
 
 // The main minimax func
 const minimax = (newBoard, player) => {
@@ -118,10 +149,10 @@ origBoard = [
      6, 'O', 'O'
     ];
 
-let board1 = [
-    '', '', '',
-    '', '', '',
-    '', '', '',
+let boardTemplate = [
+    0, 1, 2,
+    3, 4, 5,
+    6, 7, 8,
 ]
 
 
@@ -132,5 +163,11 @@ let board2 = [
 ]
 
 
-console.log(minimax(board2, aiPlayer));
-console.log(minimax(board2, huPlayer));
+let board3 = [
+    0, 1, 2,
+    3, 4, 5,
+    6, 7, 8,
+]
+
+console.log(minimax(board3, huPlayer));
+console.log(minimax(board3, aiPlayer));

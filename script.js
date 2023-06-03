@@ -67,23 +67,48 @@ const gameFlow = (() => {
 	let activePlayer = players[0];
 
 	//? AI
-	const aiPlayer = (board, player) => {
-		// Pick marker for Player
+	const aiPlayer = (board, playersArr) => {
+		// Empty cells
 		const emptyIndexes = (board) => {
 			return board.filter((s) => s != 'O' && s != 'X');
 		}
+
+		
+		
 		// Setup AI - Easy, pick random moves
 		let randomIndex = Math.floor(Math.random() * emptyIndexes(board).length);
 		let randomCell = emptyIndexes(board)[randomIndex];
-		console.log(emptyIndexes.length);
-		console.log(randomCell);
-		// if (activePlayer.name === 'Ai') {
-			
-		// }
 		return randomCell;
 
 		// Setup AI - Medium, pick random moves + minimax
 		// Setup AI - Unbeatable, minimax only 
+		if (playersArr === "Ai - Unbeatable") {
+			const winning = (board, player) => {
+				let result = false;
+				const winningComb = [
+					[0, 1, 2],
+					[3, 4, 5],
+					[6, 7, 8],
+					[0, 3, 6],
+					[1, 4, 7],
+					[2, 5, 8],
+					[0, 4, 8],
+					[6, 4, 2],
+				];
+				
+				winningComb.forEach((combo, index) => {
+					if (
+						board[combo[0]] === player &&
+						board[combo[0]] === board[combo[1]] &&
+						board[combo[0]] === board[combo[2]]
+					) {
+						result = true;
+					}
+				});
+				 
+				return result;
+			}
+		}
 		// 
 }
 
@@ -190,6 +215,32 @@ const displayControl = (() => {
 	const pointsP1 = document.createElement('p');
 	const pointsP2 = document.createElement('p');
 
+	//TODO Ai
+	let nextStep = true;
+	const aiPlayerMove = () => { 
+		//? AI
+		const activePlayer = game.getActivePlayer();
+		const board = gameBoard.getBoard();
+		const winner = game.getWinner();
+		if (winner) return;
+		let aiCell = game.aiPlayer(board, activePlayer);
+		console.log(board);
+		game.playRound(aiCell);
+		screenUpdate();
+	}
+
+	const onlyAiGame = () => {
+		nextStep = false;
+		const winner = game.getWinner();
+		if (winner) return;
+		// First move
+		setTimeout(aiPlayerMove, 500);
+		// Second move;
+		setTimeout(aiPlayerMove, 1500);
+		// Next round
+		setTimeout(onlyAiGame, 2000);
+	}
+
 	//TODO Button (RE)Start button
 	const startDiv = document.createElement('div');
 	startDiv.setAttribute('class', 'startDiv');
@@ -198,7 +249,18 @@ const displayControl = (() => {
 		  resetBtn.classList.add('resetBtn');
 		  resetBtn.textContent = 'RESTART';
 		  resetBtn.addEventListener('click', () => {
+			const players = game.getPlayers();
 			game.newGame();
+			if (players[0].name === 'Ai' && players[1].name === 'Ai') {
+				console.log('Only AI game');
+				onlyAiGame();
+			} else if (players[0].name === 'Ai' && players[1].name !== 'Ai') {
+				nextStep = false;
+				setTimeout(aiPlayerMove, 1000);
+				setTimeout(( ) => {
+					nextStep = true;
+				}, 1200);
+			}
 			screenUpdate();
 		});
 
@@ -230,6 +292,20 @@ const displayControl = (() => {
 			game.setNames(newNames);
 			game.newGame();
 			screenUpdate();
+
+			//? Ai
+			
+			if (newNames[0] === 'Ai' && newNames[1] === 'Ai') {
+				console.log('Only AI game');
+				onlyAiGame();
+			} else if (newNames[0] === 'Ai' && newNames[1] !== 'Ai') {
+				nextStep = false;
+				setTimeout(aiPlayerMove, 1000);
+				setTimeout(( ) => {
+					nextStep = true;
+				}, 1200);
+			}
+
 			startDiv.appendChild(resetBtn);
 			formDiv.remove();
 		});
@@ -317,32 +393,26 @@ const displayControl = (() => {
 		boardDiv.appendChild(boardDesk);
 	};
 
-	
-	//? Ai
-	// Set timeout func
-
-	
+		
 	//* Event listener
 	const clickHandlerBoard = (e) => {
 		const winner = game.getWinner();
+		const players = game.getPlayers();
+
 		if (winner) return;
-		const activePlayer = game.getActivePlayer();
-		//? AI
-		const board = gameBoard.getBoard();
-		aiCell = game.aiPlayer(board, activePlayer);
-		if (activePlayer.name !== 'Ai') {
+		if (nextStep) {
 			const selectedCell = e.target.dataset.cell;
 			if (!selectedCell) return;
 			game.playRound(selectedCell);
 			screenUpdate();
-			
-		} else if (activePlayer.name === 'Ai') {
-			console.log(board);
-			console.log(aiCell);
-			game.playRound(aiCell);
-			screenUpdate();
-		}
-
+			if (players[0].name === 'Ai' || players[1].name === 'Ai') {
+				nextStep = false;
+				setTimeout(aiPlayerMove, 1000);
+				setTimeout(( ) => {
+					nextStep = true;
+				}, 1200);
+			}
+		}	
 		
 	};
 	boardDiv.addEventListener('click', clickHandlerBoard);
