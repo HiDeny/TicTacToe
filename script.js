@@ -67,50 +67,131 @@ const gameFlow = (() => {
 	let activePlayer = players[0];
 
 	//? AI
-	const aiPlayer = (board, playersArr) => {
+	const aiPlayer = (board, player) => {
+		let nextMove = 0;
 		// Empty cells
 		const emptyIndexes = (board) => {
 			return board.filter((s) => s != 'O' && s != 'X');
 		}
 
-		
+		// Setup AI - Unbeatable, minimax only 
+		// Setup minimax
+		const winning = (board, player) => {
+			let result = false;
+			const winningComb = [
+				[0, 1, 2],
+				[3, 4, 5],
+				[6, 7, 8],
+				[0, 3, 6],
+				[1, 4, 7],
+				[2, 5, 8],
+				[0, 4, 8],
+				[6, 4, 2],
+			];
+			
+			winningComb.forEach((combo, index) => {
+				if (
+					board[combo[0]] === player.marker &&
+					board[combo[0]] === board[combo[1]] &&
+					board[combo[0]] === board[combo[2]]
+				) {
+					result = true;
+				}
+			});
+			 
+			return result;
+		}
+	
+
+		// The main minimax func
+		const minimax = (newBoard, player) => {
+			let huPlayer = 'O';
+			let aiPlayer = 'X';
+			// console.log(player);
+
+			// Free spots
+			let availSpots = emptyIndexes(newBoard);
+			// console.log(newBoard);
+
+			//Check terminal states, win, lose, tie
+			if (winning(newBoard, huPlayer)) {
+				// console.log('Test1');
+				return {score:-10};
+			} else if (winning(newBoard, aiPlayer)){
+				// console.log('Test2');
+				return {score:10};
+			} else if (availSpots.length === 0){
+				// console.log('Test3');
+				return {score:0};
+			}
+
+			// Collect all objects
+			let moves = [];
+
+			for (let i = 0; i < availSpots.length; i++) {
+				let move = {};
+				// console.log(i);
+				move.index = newBoard[availSpots[i]];
+				// console.log(availSpots.length);
+				newBoard[availSpots[i]] = player;
+				// console.log(player);
+				if (player === aiPlayer){
+					let result = minimax(newBoard, huPlayer);
+					move.score = result.score;
+				} else {
+					let result = minimax(newBoard, aiPlayer);
+					move.score = result.score;
+				}
+
+				newBoard[availSpots[i]] = move.index;
+				moves.push(move);
+			}
+
+			// console.log('Will this get there ?');
+
+			let bestMove;
+			if (player === aiPlayer) {
+				let bestScore = -10000;
+				for(let i = 0; i < moves.length; i++) {
+					if(moves[i].score > bestScore){
+						bestScore = moves[i].score;
+						bestMove = i;
+					}
+				}
+			} else {
+				let bestScore = 10000;
+				for (let i = 0; i < moves.length; i++) {
+					if (moves[i].score < bestScore) {
+						bestScore = moves[i].score;
+						bestMove = i;
+					}
+				}
+			}
+
+			// console.log('Will it stop?');
+			return moves[bestMove];
+		}
+
 		
 		// Setup AI - Easy, pick random moves
-		let randomIndex = Math.floor(Math.random() * emptyIndexes(board).length);
-		let randomCell = emptyIndexes(board)[randomIndex];
-		return randomCell;
+		const easyAi = () => {
+			let randomIndex = Math.floor(Math.random() * emptyIndexes(board).length);
+			let randomCell = emptyIndexes(board)[randomIndex];
+			nextMove = randomCell;
+		}
 
 		// Setup AI - Medium, pick random moves + minimax
-		// Setup AI - Unbeatable, minimax only 
-		if (playersArr === "Ai - Unbeatable") {
-			const winning = (board, player) => {
-				let result = false;
-				const winningComb = [
-					[0, 1, 2],
-					[3, 4, 5],
-					[6, 7, 8],
-					[0, 3, 6],
-					[1, 4, 7],
-					[2, 5, 8],
-					[0, 4, 8],
-					[6, 4, 2],
-				];
-				
-				winningComb.forEach((combo, index) => {
-					if (
-						board[combo[0]] === player &&
-						board[combo[0]] === board[combo[1]] &&
-						board[combo[0]] === board[combo[2]]
-					) {
-						result = true;
-					}
-				});
-				 
-				return result;
-			}
+		const impAi = () => {
+			nextMove = minimax(board, player).index;
 		}
-		// 
-}
+			
+					
+		
+		// easyAi();
+		impAi();
+		console.log(nextMove);
+		return nextMove;
+	}
 
 
 	const switchTurns = () => {
@@ -223,7 +304,7 @@ const displayControl = (() => {
 		const board = gameBoard.getBoard();
 		const winner = game.getWinner();
 		if (winner) return;
-		let aiCell = game.aiPlayer(board, activePlayer);
+		let aiCell = game.aiPlayer(board, activePlayer.marker);
 		console.log(board);
 		game.playRound(aiCell);
 		screenUpdate();

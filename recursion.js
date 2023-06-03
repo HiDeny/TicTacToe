@@ -138,7 +138,7 @@ const minimax = (newBoard, player) => {
         }
     }
 
-    return moves[bestMove];
+    return  moves[bestMove];
 }
 
 
@@ -169,5 +169,7 @@ let board3 = [
     6, 7, 8,
 ]
 
-console.log(minimax(board3, huPlayer));
+console.log();
 console.log(minimax(board3, aiPlayer));
+
+console.log(minimax(board3, huPlayer).index);
