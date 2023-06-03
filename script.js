@@ -62,43 +62,51 @@ const gameFlow = (() => {
 	let activePlayer = players[0];
 
 	//? AI
-	const aiPlayer = (board, player) => {
+	const aiPlayer = (board, player, level) => {
 		let nextMove = 4;
+		let aiMark = player;
+		let opponentMark = player === 'X' ? 'O' : 'X';
 		// Empty cells
 		const emptyIndexes = (board) => {
 			return board.filter((s) => s != 'O' && s != 'X');
 		};
 
+		//! Setup AI - Easy, pick random moves
+		const easyAi = () => {
+			let randomIndex = Math.floor(Math.random() * emptyIndexes(board).length);
+			let randomCell = emptyIndexes(board)[randomIndex];
+			nextMove = randomCell;
+		};
+
 		// Winning?
-		// console.log(player);
 		const winning = (board, player) => {
-			if (
-				(board[0] == player && board[1] == player && board[2] == player) ||
-				(board[3] == player && board[4] == player && board[5] == player) ||
-				(board[6] == player && board[7] == player && board[8] == player) ||
-				(board[0] == player && board[3] == player && board[6] == player) ||
-				(board[1] == player && board[4] == player && board[7] == player) ||
-				(board[2] == player && board[5] == player && board[8] == player) ||
-				(board[0] == player && board[4] == player && board[8] == player) ||
-				(board[2] == player && board[4] == player && board[6] == player)
-			) {
-				return true;
-			} else {
-				return false;
-			}
-		}
+			let result = false;
+			const winningComb = [
+				[0, 1, 2],
+				[3, 4, 5],
+				[6, 7, 8],
+				[0, 3, 6],
+				[1, 4, 7],
+				[2, 5, 8],
+				[0, 4, 8],
+				[6, 4, 2],
+			];
 
-		// Setup AI - Unbeatable, minimax only
-		// Setup minimax
-		let aiMark = player;
-		let opponentMark = player === 'X' ? 'O' : 'X';
-		console.log(player);
-		console.log('Ai Mark' + aiMark);
-		console.log('userMark' + opponentMark);
+			winningComb.forEach((combo) => {
+				if (
+					board[combo[0]] === player &&
+					board[combo[0]] === board[combo[1]] &&
+					board[combo[0]] === board[combo[2]]
+				) {
+					result = true;
+				}
+			});
+
+			return result;
+		};
+
+		//! Setup AI - Unbeatable, minimax only
 		const unbAi = () => {
-			// console.log(board);
-			console.log(winning(board, 'X'));
-
 			// The main minimax func
 			const minimax = (newBoard, player) => {
 				
@@ -107,10 +115,8 @@ const gameFlow = (() => {
 
 				//Check terminal states, win, lose, tie
 				if (winning(newBoard, opponentMark)) {
-					// console.log('Test1');
 					return { score: -10 };
 				} else if (winning(newBoard, aiMark)) {
-					// console.log('Test2');
 					return { score: 10 };
 				} else if (availSpots.length === 0) {
 					return { score: 0 };
@@ -162,15 +168,15 @@ const gameFlow = (() => {
 			nextMove = minimax(board, player).index;
 		};
 
-		// Setup AI - Easy, pick random moves
-		const easyAi = () => {
-			let randomIndex = Math.floor(Math.random() * emptyIndexes(board).length);
-			let randomCell = emptyIndexes(board)[randomIndex];
-			nextMove = randomCell;
-		};
-
 		// Setup AI - Medium, pick random moves + minimax
 
+		console.log(level);
+
+		// if (level.include('Easy')){
+		// 	console.log('Level 0');
+		// } else if (level.include('Easy')){
+		// 	console.log('Level 2');
+		// }
 		// easyAi();
 		unbAi();
 		console.log(nextMove);
@@ -289,7 +295,7 @@ const displayControl = (() => {
 		const board = gameBoard.getBoard();
 		const winner = game.getWinner();
 		if (winner) return;
-		let aiCell = game.aiPlayer(board, activePlayer.marker);
+		let aiCell = game.aiPlayer(board, activePlayer.marker, activePlayer.name);
 		game.playRound(aiCell);
 		console.log(board);
 		screenUpdate();
