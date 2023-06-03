@@ -63,14 +63,14 @@ const gameFlow = (() => {
 
 	//? AI
 	const aiPlayer = (board, player) => {
-		let nextMove = 0;
+		let nextMove = 4;
 		// Empty cells
 		const emptyIndexes = (board) => {
 			return board.filter((s) => s != 'O' && s != 'X');
 		};
 
 		// Winning?
-		console.log(player);
+		// console.log(player);
 		const winning = (board, player) => {
 			if (
 				(board[0] == player && board[1] == player && board[2] == player) ||
@@ -90,21 +90,26 @@ const gameFlow = (() => {
 
 		// Setup AI - Unbeatable, minimax only
 		// Setup minimax
-
+		let aiMark = player;
+		let opponentMark = player === 'X' ? 'O' : 'X';
+		console.log(player);
+		console.log('Ai Mark' + aiMark);
+		console.log('userMark' + opponentMark);
 		const unbAi = () => {
-			console.log(board);
+			// console.log(board);
 			console.log(winning(board, 'X'));
 
 			// The main minimax func
 			const minimax = (newBoard, player) => {
+				
 				// Free spots
 				let availSpots = emptyIndexes(newBoard);
 
 				//Check terminal states, win, lose, tie
-				if (winning(newBoard, 'O')) {
+				if (winning(newBoard, opponentMark)) {
 					// console.log('Test1');
 					return { score: -10 };
-				} else if (winning(newBoard, 'X')) {
+				} else if (winning(newBoard, aiMark)) {
 					// console.log('Test2');
 					return { score: 10 };
 				} else if (availSpots.length === 0) {
@@ -119,11 +124,11 @@ const gameFlow = (() => {
 					move.index = newBoard[availSpots[i]];
 
 					newBoard[availSpots[i]] = player;
-					if (player === 'X') {
-						let result = minimax(newBoard, 'O');
+					if (player === aiMark) {
+						let result = minimax(newBoard, opponentMark);
 						move.score = result.score;
 					} else {
-						let result = minimax(newBoard, 'X');
+						let result = minimax(newBoard, aiMark);
 						move.score = result.score;
 					}
 
@@ -133,7 +138,7 @@ const gameFlow = (() => {
 				}
 
 				let bestMove;
-				if (player === 'X') {
+				if (player === aiMark) {
 					let bestScore = -10000;
 					for (let i = 0; i < moves.length; i++) {
 						if (moves[i].score > bestScore) {
@@ -153,8 +158,8 @@ const gameFlow = (() => {
 
 				return moves[bestMove];
 			};
-			console.log(minimax(board, 'X'));
-			nextMove = minimax(board, 'X').index;
+			console.log(minimax(board, player));
+			nextMove = minimax(board, player).index;
 		};
 
 		// Setup AI - Easy, pick random moves
@@ -285,8 +290,8 @@ const displayControl = (() => {
 		const winner = game.getWinner();
 		if (winner) return;
 		let aiCell = game.aiPlayer(board, activePlayer.marker);
-		console.log(board);
 		game.playRound(aiCell);
+		console.log(board);
 		screenUpdate();
 	};
 
@@ -317,7 +322,7 @@ const displayControl = (() => {
 			onlyAiGame();
 		} else if (players[0].name === 'Ai' && players[1].name !== 'Ai') {
 			nextStep = false;
-			setTimeout(aiPlayerMove, 1000);
+			setTimeout(aiPlayerMove, 500);
 			setTimeout(() => {
 				nextStep = true;
 			}, 1200);
@@ -358,7 +363,7 @@ const displayControl = (() => {
 				onlyAiGame();
 			} else if (newNames[0] === 'Ai' && newNames[1] !== 'Ai') {
 				nextStep = false;
-				setTimeout(aiPlayerMove, 1000);
+				setTimeout(aiPlayerMove, 500);
 				setTimeout(() => {
 					nextStep = true;
 				}, 1200);
