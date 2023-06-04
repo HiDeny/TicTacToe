@@ -62,6 +62,7 @@ const gameFlow = (() => {
 	let activePlayer = players[0];
 
 	//? AI
+	let round = 0;
 	const aiPlayer = (board, player, level) => {
 		let nextMove = 4;
 		let aiMark = player;
@@ -109,7 +110,6 @@ const gameFlow = (() => {
 		const unbAi = () => {
 			// The main minimax func
 			const minimax = (newBoard, player) => {
-				
 				// Free spots
 				let availSpots = emptyIndexes(newBoard);
 
@@ -168,18 +168,30 @@ const gameFlow = (() => {
 			nextMove = minimax(board, player).index;
 		};
 
-		// Setup AI - Medium, pick random moves + minimax
+		//! Setup AI - Medium, pick random moves + minimax
+		const mediumAi = () => {
+			console.log(round);
+			if (round % 3 === 0) {
+				console.log('Easy');
+				easyAi();
+				round++;
+			} else {
+				console.log('Unb');
+				unbAi();
+				round++;
+			}
+		};
 
 		console.log(level);
 
-		// if (level.include('Easy')){
-		// 	console.log('Level 0');
-		// } else if (level.include('Easy')){
-		// 	console.log('Level 2');
-		// }
-		// easyAi();
-		unbAi();
-		console.log(nextMove);
+		if (level === 'Easy') {
+			easyAi();
+		} else if (level === 'Medium') {
+			mediumAi();
+		} else if (level === 'Hard') {
+			unbAi();
+		}
+
 		return nextMove;
 	};
 
@@ -251,6 +263,7 @@ const gameFlow = (() => {
 
 	const newGame = () => {
 		activeBoard.board = activeBoard.newBoard();
+		round = 0;
 		activePlayer = players[0];
 		winner = null;
 	};
@@ -290,27 +303,15 @@ const displayControl = (() => {
 	//TODO Ai
 	let nextStep = true;
 	const aiPlayerMove = () => {
-		//? AI
 		const activePlayer = game.getActivePlayer();
 		const board = gameBoard.getBoard();
 		const winner = game.getWinner();
 		if (winner) return;
 		let aiCell = game.aiPlayer(board, activePlayer.marker, activePlayer.name);
+		console.log(aiCell);
 		game.playRound(aiCell);
 		console.log(board);
 		screenUpdate();
-	};
-
-	const onlyAiGame = () => {
-		nextStep = false;
-		const winner = game.getWinner();
-		if (winner) return;
-		// First move
-		setTimeout(aiPlayerMove, 500);
-		// Second move;
-		setTimeout(aiPlayerMove, 1500);
-		// Next round
-		setTimeout(onlyAiGame, 2000);
 	};
 
 	//TODO Button (RE)Start button
@@ -323,10 +324,12 @@ const displayControl = (() => {
 	resetBtn.addEventListener('click', () => {
 		const players = game.getPlayers();
 		game.newGame();
-		if (players[0].name === 'Ai' && players[1].name === 'Ai') {
-			console.log('Only AI game');
-			onlyAiGame();
-		} else if (players[0].name === 'Ai' && players[1].name !== 'Ai') {
+		console.log(players);
+		if (
+			players[0].name === 'Easy' ||
+			players[0].name === 'Medium' ||
+			players[0].name === 'Hard'
+		) {
 			nextStep = false;
 			setTimeout(aiPlayerMove, 500);
 			setTimeout(() => {
@@ -337,13 +340,13 @@ const displayControl = (() => {
 	});
 
 	//TODO Allow players to pick their names
-	const changeNames = () => {
+	const PvP = () => {
 		let newNames = [];
 
 		const mainDiv = document.querySelector('.main');
 
-		const formDiv = document.createElement('div');
-		formDiv.classList.add('formDiv');
+		const PvPDiv = document.createElement('div');
+		PvPDiv.classList.add('PvPDiv');
 
 		const setNamesForm = document.createElement('form');
 		setNamesForm.setAttribute('id', 'setNames');
@@ -354,6 +357,7 @@ const displayControl = (() => {
 			e.preventDefault();
 			const formData = new FormData(setNamesForm);
 			const newNamesData = Object.fromEntries(formData.entries());
+			console.log(newNamesData);
 
 			newNames[0] = newNamesData.name1;
 			newNames[1] = newNamesData.name2;
@@ -362,34 +366,21 @@ const displayControl = (() => {
 			game.newGame();
 			screenUpdate();
 
-			//? Ai
-
-			if (newNames[0] === 'Ai' && newNames[1] === 'Ai') {
-				console.log('Only AI game');
-				onlyAiGame();
-			} else if (newNames[0] === 'Ai' && newNames[1] !== 'Ai') {
-				nextStep = false;
-				setTimeout(aiPlayerMove, 500);
-				setTimeout(() => {
-					nextStep = true;
-				}, 1200);
-			}
-
 			startDiv.appendChild(resetBtn);
-			formDiv.remove();
+			PvPDiv.remove();
 		});
 
 		const setName1 = document.createElement('input');
 		setName1.setAttribute('type', 'text');
 		setName1.setAttribute('id', 'name1');
 		setName1.setAttribute('name', 'name1');
-		setName1.setAttribute('placeholder', 'Player 1');
+		setName1.setAttribute('placeholder', 'Player X');
 
 		const setName2 = document.createElement('input');
 		setName2.setAttribute('type', 'text');
 		setName2.setAttribute('id', 'name2');
 		setName2.setAttribute('name', 'name2');
-		setName2.setAttribute('placeholder', 'Player 2');
+		setName2.setAttribute('placeholder', 'Player O');
 
 		const submitBtn = document.createElement('button');
 		submitBtn.setAttribute('type', 'submit');
@@ -399,11 +390,217 @@ const displayControl = (() => {
 		setNamesForm.appendChild(setName1);
 		setNamesForm.appendChild(setName2);
 		setNamesForm.appendChild(submitBtn);
-		formDiv.appendChild(setNamesForm);
+		PvPDiv.appendChild(setNamesForm);
 
-		mainDiv.appendChild(formDiv);
+		mainDiv.appendChild(PvPDiv);
 	};
-	changeNames();
+
+	const PvA = () => {
+		let newNames = [];
+
+		const PvADiv = document.createElement('div');
+		PvADiv.classList.add('PvADiv');
+
+		const PvASettings = document.createElement('form');
+		PvASettings.setAttribute('id', 'PvAform');
+		PvASettings.setAttribute('action', '');
+		PvASettings.setAttribute('method', 'post');
+
+		PvASettings.addEventListener('submit', (e) => {
+			e.preventDefault();
+			const formData = new FormData(PvASettings);
+			const newData = Object.fromEntries(formData.entries());
+			console.log(newData);
+
+			const marker = newData.marker;
+			const difficulty = newData.difficulty;
+			const name = newData.name1;
+
+			if (marker === 'X') {
+				newNames[0] = name;
+				newNames[1] = difficulty;
+			}
+			if (marker === 'O') {
+				newNames[0] = difficulty;
+				newNames[1] = name;
+			}
+
+			game.setNames(newNames);
+			game.newGame();
+			screenUpdate();
+
+			//? Ai
+			console.log(newNames[0]);
+			if (newNames[0] === difficulty) {
+				nextStep = false;
+				setTimeout(aiPlayerMove, 1000);
+				setTimeout(() => {
+					nextStep = true;
+				}, 1200);
+			}
+			startDiv.appendChild(resetBtn);
+			PvADiv.remove();
+		});
+
+		// Set players name
+		const setName1 = document.createElement('input');
+		setName1.setAttribute('type', 'text');
+		setName1.setAttribute('id', 'name1');
+		setName1.setAttribute('name', 'name1');
+		setName1.setAttribute('placeholder', 'Player');
+
+		// Set players marker
+		const fieldsetMarker = document.createElement('fieldset');
+		fieldsetMarker.classList.add('setMarker');
+		const legendMarker = document.createElement('legend');
+		legendMarker.classList.add('LegendMarker');
+		legendMarker.textContent = 'Pick Marker:';
+
+		// X
+		const markerX = document.createElement('label');
+		markerX.setAttribute('for', 'markerX');
+		markerX.textContent = 'X: ';
+
+		const optionX = document.createElement('input');
+		optionX.setAttribute('type', 'radio');
+		optionX.setAttribute('id', 'markerX');
+		optionX.setAttribute('name', 'marker');
+		optionX.setAttribute('value', 'X');
+		optionX.setAttribute('checked', true);
+
+		markerX.appendChild(optionX);
+		fieldsetMarker.appendChild(markerX);
+
+		// O
+		const markerO = document.createElement('label');
+		markerO.setAttribute('for', 'markerO');
+		markerO.textContent = 'O: ';
+
+		const optionO = document.createElement('input');
+		optionO.setAttribute('type', 'radio');
+		optionO.setAttribute('id', 'markerO');
+		optionO.setAttribute('name', 'marker');
+		optionO.setAttribute('value', 'O');
+
+		markerO.appendChild(optionO);
+		fieldsetMarker.appendChild(markerO);
+
+		// Ai options
+		const fieldsetAi = document.createElement('fieldset');
+		fieldsetAi.classList.add('fieldsetAi');
+		const legendAi = document.createElement('legend');
+		legendAi.classList.add('LegendAi');
+		legendAi.textContent = 'Choose difficulty:';
+
+		// Easy
+		const easy = document.createElement('div');
+		easy.classList.add('easyDiv');
+
+		const labelEasy = document.createElement('label');
+		labelEasy.setAttribute('for', 'easy');
+		labelEasy.textContent = 'Easy: ';
+
+		const difficultyEasy = document.createElement('input');
+		difficultyEasy.setAttribute('type', 'radio');
+		difficultyEasy.setAttribute('id', 'easy');
+		difficultyEasy.setAttribute('name', 'difficulty');
+		difficultyEasy.setAttribute('value', 'Easy');
+
+		labelEasy.appendChild(difficultyEasy);
+		easy.appendChild(labelEasy);
+
+		// Medium
+		const medium = document.createElement('div');
+		medium.classList.add('mediumDiv');
+
+		const labelMedium = document.createElement('label');
+		labelMedium.setAttribute('for', 'medium');
+		labelMedium.textContent = 'Medium: ';
+
+		const difficultyMedium = document.createElement('input');
+		difficultyMedium.setAttribute('type', 'radio');
+		difficultyMedium.setAttribute('id', 'medium');
+		difficultyMedium.setAttribute('checked', true);
+		difficultyMedium.setAttribute('name', 'difficulty');
+		difficultyMedium.setAttribute('value', 'Medium');
+
+		labelMedium.appendChild(difficultyMedium);
+		medium.appendChild(labelMedium);
+
+		// Hard
+		const hard = document.createElement('div');
+		hard.classList.add('hardDiv');
+
+		const labelHard = document.createElement('label');
+		labelHard.setAttribute('for', 'Hard');
+		labelHard.textContent = 'No Chance to Win: ';
+
+		const difficultyHard = document.createElement('input');
+		difficultyHard.setAttribute('type', 'radio');
+		difficultyHard.setAttribute('id', 'hard');
+		difficultyHard.setAttribute('name', 'difficulty');
+		difficultyHard.setAttribute('value', 'Hard');
+
+		labelHard.appendChild(difficultyHard);
+		hard.appendChild(labelHard);
+
+		// Submit Button
+		const submitBtn = document.createElement('button');
+		submitBtn.setAttribute('type', 'submit');
+		submitBtn.setAttribute('class', 'submitBtn');
+		submitBtn.innerText = 'PLAY!';
+
+		// Append
+		fieldsetMarker.appendChild(legendMarker);
+
+		fieldsetAi.appendChild(legendAi);
+		fieldsetAi.appendChild(easy);
+		fieldsetAi.appendChild(medium);
+		fieldsetAi.appendChild(hard);
+
+		PvASettings.appendChild(setName1);
+		PvASettings.appendChild(fieldsetMarker);
+		PvASettings.appendChild(fieldsetAi);
+		PvASettings.appendChild(submitBtn);
+		PvADiv.appendChild(PvASettings);
+
+		mainDiv.appendChild(PvADiv);
+	};
+
+	// PvP or PvA
+	// Option 1: PvP or PvA
+	const settings = () => {
+		// Create
+		const settingsDiv = document.createElement('div');
+		settingsDiv.classList.add('settingsDiv');
+
+		// If PvP:
+		// 		Set Names - P1 = X, P2 = O
+		const playerVSplayer = document.createElement('button');
+		playerVSplayer.classList.add('PvP');
+		playerVSplayer.textContent = 'Player vs Player';
+		playerVSplayer.addEventListener('click', () => {
+			settingsDiv.remove();
+			PvP();
+		});
+
+		// If PvA:
+		// 		Set name for player;
+		//      Pick Ai difficulty - radio
+		const playerVScomp = document.createElement('button');
+		playerVScomp.classList.add('PvA');
+		playerVScomp.textContent = 'Player vs Computer';
+		playerVScomp.addEventListener('click', () => {
+			settingsDiv.remove();
+			PvA();
+		});
+
+		// Append
+		settingsDiv.appendChild(playerVSplayer);
+		settingsDiv.appendChild(playerVScomp);
+		mainDiv.appendChild(settingsDiv);
+	};
+	settings();
 
 	// Append
 	mainDiv.insertBefore(startDiv, mainDiv.firstChild);
@@ -467,12 +664,19 @@ const displayControl = (() => {
 			if (!selectedCell) return;
 			game.playRound(selectedCell);
 			screenUpdate();
-			if (players[0].name === 'Ai' || players[1].name === 'Ai') {
+			if (
+				players[0].name === 'Easy' ||
+				players[0].name === 'Medium' ||
+				players[0].name === 'Hard' ||
+				players[1].name === 'Easy' ||
+				players[1].name === 'Medium' ||
+				players[1].name === 'Hard'
+			) {
 				nextStep = false;
-				setTimeout(aiPlayerMove, 1000);
+				setTimeout(aiPlayerMove, 700);
 				setTimeout(() => {
 					nextStep = true;
-				}, 1200);
+				}, 1000);
 			}
 		}
 	};

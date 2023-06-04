@@ -371,10 +371,20 @@
     justify-content: center;
 }
 
-.formDiv {
+.PvPDiv,
+.PvADiv,
+.settingsDiv {
     display: flex;
     justify-content: center;
-  }
+}
+
+.fieldsetAi {
+  display: grid;
+  grid-template-columns: 500px;
+  grid-template-rows: repeat(3, 30px);
+  gap: 5px;
+  padding-top: 20px;
+}
   
 #setNames {
     display: grid;
@@ -385,6 +395,27 @@
     background-color: lightgray;
     border-radius: 20px;
     border: black 1px solid;
+}
+
+#PvAform {
+  display: grid;
+  grid-template-rows: 40px 60px 150px 50px;
+  gap: 20px;
+  padding: 40px;
+  background-color: lightgray;
+  border-radius: 20px;
+  border: black 1px solid;
+}
+
+.setMarker {
+  display: flex;
+  justify-content: space-evenly;
+}
+
+[type="radio"] {
+  /* appearance: none; */
+
+  background-color: transparent;
 }
 
 .submitBtn {
