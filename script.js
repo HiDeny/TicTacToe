@@ -1,3 +1,5 @@
+
+
 //* Player
 // Factory
 const Player = (name, marker) => {
@@ -381,17 +383,21 @@ const displayControl = (() => {
 		setName1.setAttribute('type', 'text');
 		setName1.setAttribute('id', 'name1');
 		setName1.setAttribute('name', 'name1');
+		setName1.setAttribute('class', 'nes-input');
 		setName1.setAttribute('placeholder', 'Player X');
 
 		const setName2 = document.createElement('input');
 		setName2.setAttribute('type', 'text');
 		setName2.setAttribute('id', 'name2');
 		setName2.setAttribute('name', 'name2');
+		setName2.setAttribute('class', 'nes-input');
 		setName2.setAttribute('placeholder', 'Player O');
 
 		const submitBtn = document.createElement('button');
 		submitBtn.setAttribute('type', 'submit');
-		submitBtn.setAttribute('class', 'submitBtn');
+		submitBtn.classList.add('submitBtn');
+		submitBtn.classList.add('nes-btn');
+		submitBtn.classList.add('is-success');
 		submitBtn.innerText = 'PLAY!';
 
 		setNamesForm.appendChild(setName1);
@@ -417,7 +423,7 @@ const displayControl = (() => {
 			e.preventDefault();
 			const formData = new FormData(PvASettings);
 			const newData = Object.fromEntries(formData.entries());
-			// console.log(newData);
+			console.log(newData);
 
 			const marker = newData.marker;
 			const difficulty = newData.difficulty;
@@ -455,6 +461,7 @@ const displayControl = (() => {
 		setName1.setAttribute('type', 'text');
 		setName1.setAttribute('id', 'name1');
 		setName1.setAttribute('name', 'name1');
+		setName1.setAttribute('class', 'nes-input');
 		setName1.setAttribute('placeholder', 'Player');
 
 		// Set players marker
@@ -464,34 +471,50 @@ const displayControl = (() => {
 		legendMarker.classList.add('LegendMarker');
 		legendMarker.textContent = 'Pick Marker:';
 
+		fieldsetMarker.appendChild(legendMarker);
+
 		// X
+		const markerXDiv = document.createElement('div');
+			  markerXDiv.classList.add('markerXDiv');
+			  
 		const markerX = document.createElement('label');
-		markerX.setAttribute('for', 'markerX');
-		markerX.textContent = 'X: ';
 
 		const optionX = document.createElement('input');
 		optionX.setAttribute('type', 'radio');
 		optionX.setAttribute('id', 'markerX');
+		optionX.setAttribute('class', 'nes-radio');
 		optionX.setAttribute('name', 'marker');
 		optionX.setAttribute('value', 'X');
 		optionX.setAttribute('checked', true);
 
+		const spanX = document.createElement('span');
+		      spanX.textContent = 'X';
+
 		markerX.appendChild(optionX);
-		fieldsetMarker.appendChild(markerX);
+		markerX.appendChild(spanX);
+		markerXDiv.appendChild(markerX);
+		fieldsetMarker.appendChild(markerXDiv);
 
 		// O
+		const markerODiv = document.createElement('div');
+			  markerODiv.classList.add('markerODiv');
+
 		const markerO = document.createElement('label');
-		markerO.setAttribute('for', 'markerO');
-		markerO.textContent = 'O: ';
 
 		const optionO = document.createElement('input');
 		optionO.setAttribute('type', 'radio');
 		optionO.setAttribute('id', 'markerO');
+		optionO.setAttribute('class', 'nes-radio');
 		optionO.setAttribute('name', 'marker');
 		optionO.setAttribute('value', 'O');
 
+		const spanO = document.createElement('span');
+			  spanO.textContent = 'O';
+
 		markerO.appendChild(optionO);
-		fieldsetMarker.appendChild(markerO);
+		markerO.appendChild(spanO);
+		markerODiv.appendChild(markerO);
+		fieldsetMarker.appendChild(markerODiv);
 
 		// Ai options
 		const fieldsetAi = document.createElement('fieldset');
@@ -505,16 +528,20 @@ const displayControl = (() => {
 		easy.classList.add('easyDiv');
 
 		const labelEasy = document.createElement('label');
-		labelEasy.setAttribute('for', 'easy');
-		labelEasy.textContent = 'Easy: ';
 
 		const difficultyEasy = document.createElement('input');
 		difficultyEasy.setAttribute('type', 'radio');
 		difficultyEasy.setAttribute('id', 'easy');
 		difficultyEasy.setAttribute('name', 'difficulty');
+		difficultyEasy.setAttribute('class', 'nes-radio');
 		difficultyEasy.setAttribute('value', 'Easy');
 
+		const easySpan = document.createElement('span');
+			  easySpan.textContent = 'Easy';
+
+
 		labelEasy.appendChild(difficultyEasy);
+		labelEasy.appendChild(easySpan);
 		easy.appendChild(labelEasy);
 
 		// Medium
@@ -522,17 +549,21 @@ const displayControl = (() => {
 		medium.classList.add('mediumDiv');
 
 		const labelMedium = document.createElement('label');
-		labelMedium.setAttribute('for', 'medium');
-		labelMedium.textContent = 'Medium: ';
 
 		const difficultyMedium = document.createElement('input');
 		difficultyMedium.setAttribute('type', 'radio');
 		difficultyMedium.setAttribute('id', 'medium');
 		difficultyMedium.setAttribute('checked', true);
 		difficultyMedium.setAttribute('name', 'difficulty');
+		difficultyMedium.setAttribute('class', 'nes-radio');
 		difficultyMedium.setAttribute('value', 'Medium');
+		
+		const mediumSpan = document.createElement('span');
+			  mediumSpan.textContent = 'Medium';
+
 
 		labelMedium.appendChild(difficultyMedium);
+		labelMedium.appendChild(mediumSpan);
 		medium.appendChild(labelMedium);
 
 		// Hard
@@ -540,27 +571,30 @@ const displayControl = (() => {
 		hard.classList.add('hardDiv');
 
 		const labelHard = document.createElement('label');
-		labelHard.setAttribute('for', 'Hard');
-		labelHard.textContent = 'No Chance to Win: ';
 
 		const difficultyHard = document.createElement('input');
 		difficultyHard.setAttribute('type', 'radio');
 		difficultyHard.setAttribute('id', 'hard');
 		difficultyHard.setAttribute('name', 'difficulty');
+		difficultyHard.setAttribute('class', 'nes-radio');
 		difficultyHard.setAttribute('value', 'Hard');
 
+		const hardSpan = document.createElement('span');
+			  hardSpan.textContent = 'Hard';
+
 		labelHard.appendChild(difficultyHard);
+		labelHard.appendChild(hardSpan);
 		hard.appendChild(labelHard);
 
 		// Submit Button
 		const submitBtn = document.createElement('button');
 		submitBtn.setAttribute('type', 'submit');
-		submitBtn.setAttribute('class', 'submitBtn');
+		submitBtn.classList.add('submitBtn');
+		submitBtn.classList.add('nes-btn');
+		submitBtn.classList.add('is-success');
 		submitBtn.innerText = 'PLAY!';
 
 		// Append
-		fieldsetMarker.appendChild(legendMarker);
-
 		fieldsetAi.appendChild(legendAi);
 		fieldsetAi.appendChild(easy);
 		fieldsetAi.appendChild(medium);
@@ -585,7 +619,8 @@ const displayControl = (() => {
 		// If PvP:
 		// 		Set Names - P1 = X, P2 = O
 		const playerVSplayer = document.createElement('button');
-		playerVSplayer.classList.add('PvP');
+		playerVSplayer.classList.add('nes-btn');
+		playerVSplayer.classList.add('is-primary');
 		playerVSplayer.textContent = 'Player vs Player';
 		playerVSplayer.addEventListener('click', () => {
 			settingsDiv.remove();
@@ -596,7 +631,8 @@ const displayControl = (() => {
 		// 		Set name for player;
 		//      Pick Ai difficulty - radio
 		const playerVScomp = document.createElement('button');
-		playerVScomp.classList.add('PvA');
+		playerVScomp.classList.add('nes-btn');
+		playerVScomp.classList.add('is-primary');
 		playerVScomp.textContent = 'Player vs Computer';
 		playerVScomp.addEventListener('click', () => {
 			settingsDiv.remove();
@@ -646,6 +682,7 @@ const displayControl = (() => {
 		board.forEach((cell, index) => {
 			const cellButton = document.createElement('button');
 			cellButton.classList.add('cell');
+			cellButton.classList.add('nes-btn');
 			cellButton.dataset.cell = index;
 			cellButton.textContent = cell === 'X' || cell === 'O' ? cell : '';
 
