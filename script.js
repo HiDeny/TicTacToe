@@ -61,8 +61,8 @@ const gameFlow = (() => {
 	// Switch turns
 	let activePlayer = players[0];
 
-	//? AI
-	let round = 0;
+	//TODO AI
+	
 	const aiPlayer = (board, player, level) => {
 		let nextMove = 4;
 		let aiMark = player;
@@ -70,13 +70,6 @@ const gameFlow = (() => {
 		// Empty cells
 		const emptyIndexes = (board) => {
 			return board.filter((s) => s != 'O' && s != 'X');
-		};
-
-		//! Setup AI - Easy, pick random moves
-		const easyAi = () => {
-			let randomIndex = Math.floor(Math.random() * emptyIndexes(board).length);
-			let randomCell = emptyIndexes(board)[randomIndex];
-			nextMove = randomCell;
 		};
 
 		// Winning?
@@ -104,6 +97,13 @@ const gameFlow = (() => {
 			});
 
 			return result;
+		};
+
+		//! Setup AI - Easy, pick random moves
+		const easyAi = () => {
+			let randomIndex = Math.floor(Math.random() * emptyIndexes(board).length);
+			let randomCell = emptyIndexes(board)[randomIndex];
+			nextMove = randomCell;
 		};
 
 		//! Setup AI - Unbeatable, minimax only
@@ -164,25 +164,24 @@ const gameFlow = (() => {
 
 				return moves[bestMove];
 			};
-			console.log(minimax(board, player));
+			// console.log(minimax(board, player));
 			nextMove = minimax(board, player).index;
 		};
 
 		//! Setup AI - Medium, pick random moves + minimax
 		const mediumAi = () => {
-			console.log(round);
-			if (round % 3 === 0) {
+			let randomNum = Math.floor(Math.random() * 5);
+			console.log(randomNum);
+			if (randomNum < 2) {
 				console.log('Easy');
 				easyAi();
-				round++;
 			} else {
 				console.log('Unb');
 				unbAi();
-				round++;
 			}
 		};
 
-		console.log(level);
+		// console.log(level);
 
 		if (level === 'Easy') {
 			easyAi();
@@ -263,7 +262,6 @@ const gameFlow = (() => {
 
 	const newGame = () => {
 		activeBoard.board = activeBoard.newBoard();
-		round = 0;
 		activePlayer = players[0];
 		winner = null;
 	};
@@ -308,7 +306,7 @@ const displayControl = (() => {
 		const winner = game.getWinner();
 		if (winner) return;
 		let aiCell = game.aiPlayer(board, activePlayer.marker, activePlayer.name);
-		console.log(aiCell);
+		// console.log(aiCell);
 		game.playRound(aiCell);
 		console.log(board);
 		screenUpdate();
@@ -320,11 +318,11 @@ const displayControl = (() => {
 
 	const resetBtn = document.createElement('button');
 	resetBtn.classList.add('resetBtn');
-	resetBtn.textContent = 'RESTART';
+	resetBtn.textContent = 'Next Round';
 	resetBtn.addEventListener('click', () => {
 		const players = game.getPlayers();
 		game.newGame();
-		console.log(players);
+		// console.log(players);
 		if (
 			players[0].name === 'Easy' ||
 			players[0].name === 'Medium' ||
@@ -338,6 +336,14 @@ const displayControl = (() => {
 		}
 		screenUpdate();
 	});
+
+	//TODO Settings Button
+	const menuBtn = document.createElement('button');
+		  menuBtn.classList.add('menuBtn');
+		  menuBtn.textContent = 'MENU';
+		  menuBtn.addEventListener('click', () => {
+			location.reload();
+		  });
 
 	//TODO Allow players to pick their names
 	const PvP = () => {
@@ -357,7 +363,7 @@ const displayControl = (() => {
 			e.preventDefault();
 			const formData = new FormData(setNamesForm);
 			const newNamesData = Object.fromEntries(formData.entries());
-			console.log(newNamesData);
+			// console.log(newNamesData);
 
 			newNames[0] = newNamesData.name1;
 			newNames[1] = newNamesData.name2;
@@ -367,6 +373,7 @@ const displayControl = (() => {
 			screenUpdate();
 
 			startDiv.appendChild(resetBtn);
+			startDiv.appendChild(menuBtn);
 			PvPDiv.remove();
 		});
 
@@ -410,7 +417,7 @@ const displayControl = (() => {
 			e.preventDefault();
 			const formData = new FormData(PvASettings);
 			const newData = Object.fromEntries(formData.entries());
-			console.log(newData);
+			// console.log(newData);
 
 			const marker = newData.marker;
 			const difficulty = newData.difficulty;
@@ -430,7 +437,7 @@ const displayControl = (() => {
 			screenUpdate();
 
 			//? Ai
-			console.log(newNames[0]);
+			// console.log(newNames[0]);
 			if (newNames[0] === difficulty) {
 				nextStep = false;
 				setTimeout(aiPlayerMove, 1000);
@@ -439,6 +446,7 @@ const displayControl = (() => {
 				}, 1200);
 			}
 			startDiv.appendChild(resetBtn);
+			startDiv.appendChild(menuBtn);
 			PvADiv.remove();
 		});
 

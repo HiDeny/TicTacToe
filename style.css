@@ -362,20 +362,53 @@
 }
 
 :root {
-    background-color: #F2CEAE;
+    background-color: gray;
     font-family: 'Press Start 2P','Helvetica';
 }
 
 .logo {
     display: flex;
     justify-content: center;
+    margin-top: 100px;
+    font-size: 1.5rem;
+}
+
+.logo h1 {
+  display: flex;
+  justify-content: space-evenly;
+  width: 60%;
+}
+h1 .red {
+  color: #D95555;
+  text-shadow: 0 0 5px #ffffff, 0 0 10px #fa7777, 0 0 15px #fa7777, 0 0 20px #fa7777, 0 0 30px #fa7777, 0 0 40px #fa7777, 0 0 55px #fa7777, 0 0 75px #fa7777;
+  -webkit-text-stroke: 1px black;
+}
+
+h1 .blue {
+  color: #0468BF;
+  text-shadow: 0 0 5px #ffffff, 0 0 10px #0468BF, 0 0 15px #0468BF, 0 0 20px #0468BF, 0 0 30px #0468BF, 0 0 40px #0468BF, 0 0 55px #0468BF, 0 0 75px #0468BF;
+  -webkit-text-stroke: 1px black;
+}
+
+h1 .white {
+  color: white;
+  -webkit-text-stroke: 1px black;
+  text-shadow: 0 0 5px #FFF, 0 0 10px #FFF, 0 0 15px #FFF, 0 0 20px #FFF, 0 0 30px #FFF, 0 0 40px #FFF, 0 0 55px #FFF, 0 0 75px #FFF
 }
 
 .PvPDiv,
-.PvADiv,
-.settingsDiv {
+.PvADiv {
     display: flex;
     justify-content: center;
+}
+
+.settingsDiv {
+  display: grid;
+  grid-template-rows: 50px 50px;
+  gap: 20px;
+  width: 350px;
+  margin: auto;
+  margin-top: 50px;
 }
 
 .fieldsetAi {
@@ -395,6 +428,7 @@
     background-color: lightgray;
     border-radius: 20px;
     border: black 1px solid;
+    box-shadow: 5px 3px 24px 3px rgba(0,0,0,0.44);
 }
 
 #PvAform {
@@ -405,6 +439,7 @@
   background-color: lightgray;
   border-radius: 20px;
   border: black 1px solid;
+  box-shadow: 5px 3px 24px 3px rgba(0,0,0,0.44);
 }
 
 .setMarker {
@@ -489,5 +524,7 @@ input {
 
 
 
-
+.RoRo {
+  text-shadow: 0 0 5px #FFF, 0 0 10px #FFF, 0 0 15px #FFF, 0 0 20px #ffacf9, 0 0 30px #ffacf9, 0 0 40px #ffacf9, 0 0 55px #ffacf9, 0 0 75px #ffacf9;
+}
   
