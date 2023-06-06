@@ -14,10 +14,15 @@
     font-family: 'Press Start 2P','Helvetica';
 }
 
-body {
+html {
   background-image: url('/imgs/background.jpg');
   background-repeat: no-repeat;
-  background-size: fill;
+  background-size: cover;
+  height: 100%;
+}
+
+body {
+  background-color: transparent;
 }
 
 .logo {
