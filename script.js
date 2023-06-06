@@ -1,5 +1,3 @@
-
-
 //* Player
 // Factory
 const Player = (name, marker) => {
@@ -64,7 +62,7 @@ const gameFlow = (() => {
 	let activePlayer = players[0];
 
 	//TODO AI
-	
+
 	const aiPlayer = (board, player, level) => {
 		let nextMove = 4;
 		let aiMark = player;
@@ -166,7 +164,6 @@ const gameFlow = (() => {
 
 				return moves[bestMove];
 			};
-			// console.log(minimax(board, player));
 			nextMove = minimax(board, player).index;
 		};
 
@@ -174,16 +171,26 @@ const gameFlow = (() => {
 		const mediumAi = () => {
 			let randomNum = Math.floor(Math.random() * 5);
 			console.log(randomNum);
-			if (randomNum < 2) {
-				console.log('Easy');
-				easyAi();
+			if (aiMark === 'O') {
+				console.log('harder version');
+				if (randomNum < 1) {
+					console.log('Easy');
+					easyAi();
+				} else {
+					console.log('Unb');
+					unbAi();
+				}
 			} else {
-				console.log('Unb');
-				unbAi();
+				if (randomNum < 2) {
+					console.log('Easy');
+					easyAi();
+				} else {
+					console.log('Unb');
+					unbAi();
+				}
 			}
 		};
 
-		// console.log(level);
 
 		if (level === 'Easy') {
 			easyAi();
@@ -298,7 +305,12 @@ const displayControl = (() => {
 	pointsDiv.classList.add('points');
 
 	const pointsP1 = document.createElement('p');
+	pointsP1.classList.add('red');
+	pointsP1.classList.add('points');
+
 	const pointsP2 = document.createElement('p');
+	pointsP2.classList.add('blue');
+	pointsP2.classList.add('points');
 
 	//TODO Ai
 	let nextStep = true;
@@ -308,7 +320,6 @@ const displayControl = (() => {
 		const winner = game.getWinner();
 		if (winner) return;
 		let aiCell = game.aiPlayer(board, activePlayer.marker, activePlayer.name);
-		// console.log(aiCell);
 		game.playRound(aiCell);
 		console.log(board);
 		screenUpdate();
@@ -320,11 +331,12 @@ const displayControl = (() => {
 
 	const resetBtn = document.createElement('button');
 	resetBtn.classList.add('resetBtn');
+	resetBtn.classList.add('nes-btn');
+	resetBtn.classList.add('is-primary');
 	resetBtn.textContent = 'Next Round';
 	resetBtn.addEventListener('click', () => {
 		const players = game.getPlayers();
 		game.newGame();
-		// console.log(players);
 		if (
 			players[0].name === 'Easy' ||
 			players[0].name === 'Medium' ||
@@ -341,11 +353,13 @@ const displayControl = (() => {
 
 	//TODO Settings Button
 	const menuBtn = document.createElement('button');
-		  menuBtn.classList.add('menuBtn');
-		  menuBtn.textContent = 'MENU';
-		  menuBtn.addEventListener('click', () => {
-			location.reload();
-		  });
+	menuBtn.classList.add('menuBtn');
+	menuBtn.classList.add('nes-btn');
+	menuBtn.classList.add('is-error');
+	menuBtn.textContent = 'MENU';
+	menuBtn.addEventListener('click', () => {
+		location.reload();
+	});
 
 	//TODO Allow players to pick their names
 	const PvP = () => {
@@ -358,6 +372,8 @@ const displayControl = (() => {
 
 		const setNamesForm = document.createElement('form');
 		setNamesForm.setAttribute('id', 'setNames');
+		setNamesForm.classList.add('nes-container');
+		setNamesForm.classList.add('is-rounded');
 		setNamesForm.setAttribute('action', '');
 		setNamesForm.setAttribute('method', 'post');
 
@@ -365,7 +381,6 @@ const displayControl = (() => {
 			e.preventDefault();
 			const formData = new FormData(setNamesForm);
 			const newNamesData = Object.fromEntries(formData.entries());
-			// console.log(newNamesData);
 
 			newNames[0] = newNamesData.name1;
 			newNames[1] = newNamesData.name2;
@@ -374,8 +389,8 @@ const displayControl = (() => {
 			game.newGame();
 			screenUpdate();
 
-			startDiv.appendChild(resetBtn);
 			startDiv.appendChild(menuBtn);
+			startDiv.appendChild(resetBtn);
 			PvPDiv.remove();
 		});
 
@@ -416,6 +431,8 @@ const displayControl = (() => {
 
 		const PvASettings = document.createElement('form');
 		PvASettings.setAttribute('id', 'PvAform');
+		PvASettings.classList.add('nes-container');
+		PvASettings.classList.add('is-rounded');
 		PvASettings.setAttribute('action', '');
 		PvASettings.setAttribute('method', 'post');
 
@@ -442,8 +459,7 @@ const displayControl = (() => {
 			game.newGame();
 			screenUpdate();
 
-			//? Ai
-			// console.log(newNames[0]);
+			//TODO Ai
 			if (newNames[0] === difficulty) {
 				nextStep = false;
 				setTimeout(aiPlayerMove, 1000);
@@ -451,8 +467,8 @@ const displayControl = (() => {
 					nextStep = true;
 				}, 1200);
 			}
-			startDiv.appendChild(resetBtn);
 			startDiv.appendChild(menuBtn);
+			startDiv.appendChild(resetBtn);
 			PvADiv.remove();
 		});
 
@@ -475,8 +491,8 @@ const displayControl = (() => {
 
 		// X
 		const markerXDiv = document.createElement('div');
-			  markerXDiv.classList.add('markerXDiv');
-			  
+		markerXDiv.classList.add('markerXDiv');
+
 		const markerX = document.createElement('label');
 
 		const optionX = document.createElement('input');
@@ -488,7 +504,7 @@ const displayControl = (() => {
 		optionX.setAttribute('checked', true);
 
 		const spanX = document.createElement('span');
-		      spanX.textContent = 'X';
+		spanX.textContent = 'X';
 
 		markerX.appendChild(optionX);
 		markerX.appendChild(spanX);
@@ -497,7 +513,7 @@ const displayControl = (() => {
 
 		// O
 		const markerODiv = document.createElement('div');
-			  markerODiv.classList.add('markerODiv');
+		markerODiv.classList.add('markerODiv');
 
 		const markerO = document.createElement('label');
 
@@ -509,7 +525,7 @@ const displayControl = (() => {
 		optionO.setAttribute('value', 'O');
 
 		const spanO = document.createElement('span');
-			  spanO.textContent = 'O';
+		spanO.textContent = 'O';
 
 		markerO.appendChild(optionO);
 		markerO.appendChild(spanO);
@@ -537,8 +553,7 @@ const displayControl = (() => {
 		difficultyEasy.setAttribute('value', 'Easy');
 
 		const easySpan = document.createElement('span');
-			  easySpan.textContent = 'Easy';
-
+		easySpan.textContent = 'Easy';
 
 		labelEasy.appendChild(difficultyEasy);
 		labelEasy.appendChild(easySpan);
@@ -557,10 +572,9 @@ const displayControl = (() => {
 		difficultyMedium.setAttribute('name', 'difficulty');
 		difficultyMedium.setAttribute('class', 'nes-radio');
 		difficultyMedium.setAttribute('value', 'Medium');
-		
-		const mediumSpan = document.createElement('span');
-			  mediumSpan.textContent = 'Medium';
 
+		const mediumSpan = document.createElement('span');
+		mediumSpan.textContent = 'Medium';
 
 		labelMedium.appendChild(difficultyMedium);
 		labelMedium.appendChild(mediumSpan);
@@ -580,7 +594,7 @@ const displayControl = (() => {
 		difficultyHard.setAttribute('value', 'Hard');
 
 		const hardSpan = document.createElement('span');
-			  hardSpan.textContent = 'Hard';
+		hardSpan.textContent = 'Hard';
 
 		labelHard.appendChild(difficultyHard);
 		labelHard.appendChild(hardSpan);
@@ -620,7 +634,7 @@ const displayControl = (() => {
 		// 		Set Names - P1 = X, P2 = O
 		const playerVSplayer = document.createElement('button');
 		playerVSplayer.classList.add('nes-btn');
-		playerVSplayer.classList.add('is-primary');
+		playerVSplayer.classList.add('is-success');
 		playerVSplayer.textContent = 'Player vs Player';
 		playerVSplayer.addEventListener('click', () => {
 			settingsDiv.remove();
@@ -632,7 +646,7 @@ const displayControl = (() => {
 		//      Pick Ai difficulty - radio
 		const playerVScomp = document.createElement('button');
 		playerVScomp.classList.add('nes-btn');
-		playerVScomp.classList.add('is-primary');
+		playerVScomp.classList.add('is-warning');
 		playerVScomp.textContent = 'Player vs Computer';
 		playerVScomp.addEventListener('click', () => {
 			settingsDiv.remove();
@@ -647,10 +661,10 @@ const displayControl = (() => {
 	settings();
 
 	// Append
-	mainDiv.insertBefore(startDiv, mainDiv.firstChild);
 	pointsDiv.appendChild(pointsP1);
 	pointsDiv.appendChild(pointsP2);
 	mainDiv.appendChild(pointsDiv);
+	mainDiv.appendChild(startDiv);
 	mainDiv.appendChild(playerTurnDiv);
 	mainDiv.appendChild(boardDiv);
 
