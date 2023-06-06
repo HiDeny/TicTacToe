@@ -170,27 +170,20 @@ const gameFlow = (() => {
 		//! Setup AI - Medium, pick random moves + minimax
 		const mediumAi = () => {
 			let randomNum = Math.floor(Math.random() * 5);
-			console.log(randomNum);
 			if (aiMark === 'O') {
-				console.log('harder version');
 				if (randomNum < 1) {
-					console.log('Easy');
 					easyAi();
 				} else {
-					console.log('Unb');
 					unbAi();
 				}
 			} else {
 				if (randomNum < 2) {
-					console.log('Easy');
 					easyAi();
 				} else {
-					console.log('Unb');
 					unbAi();
 				}
 			}
 		};
-
 
 		if (level === 'Easy') {
 			easyAi();
@@ -321,7 +314,6 @@ const displayControl = (() => {
 		if (winner) return;
 		let aiCell = game.aiPlayer(board, activePlayer.marker, activePlayer.name);
 		game.playRound(aiCell);
-		console.log(board);
 		screenUpdate();
 	};
 
@@ -440,7 +432,6 @@ const displayControl = (() => {
 			e.preventDefault();
 			const formData = new FormData(PvASettings);
 			const newData = Object.fromEntries(formData.entries());
-			console.log(newData);
 
 			const marker = newData.marker;
 			const difficulty = newData.difficulty;
